@@ -1,26 +1,42 @@
 import React, { useCallback, useEffect, useState,useMemo } from 'react';
-import { Box, Breadcrumbs, Button, Grid, IconButton, Link, TextField, Tooltip, Typography, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Switch, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import { Box, Breadcrumbs, Button, Grid, IconButton, Link, TextField, Tooltip, Typography, Container, Card, CardContent, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Switch, List, ListItem, ListItemText, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
 import Navbar from "components/navbar/Navbar";
 import { Helmet } from 'react-helmet';
 import withRouter from "../../common/with-router";
-import { useNavigate } from 'react-router-dom';
 
-import './user-manual-add-doc-content.css';
+import './srs-manual-add-doc-content.css';
 
 import $ from 'jquery';
-import { addSubChapterNameByChapterId, deleteChapterByChapterId, getUserManualMainChapters, getUserManualSubChaptersById, updateChapterBySnNo, updateChapterContent, updateChapterNameById, updatechapterPagebreakAndLandscape } from 'services/usermanual.service';
+
 import AlertConfirmation from "common/AlertConfirmation.component";
 import { MdAccountTree } from "react-icons/md";
-import UserManualDocsAddDocContentAddSectionDialog from './usermanual-add-content-section-dialog';
-import UserManualDocRecordsComponent from './usermanual-doc-records';
+import SRSDocsAddDocContentAddSectionDialog from './srs-add-content-section-dialog';
+import SRSDocTableComponent from './srs-doc-table-content';
+import SRSDocRecordsComponent from './srs-doc-records';
 import 'summernote/dist/summernote-lite.css';
 import 'summernote/dist/summernote-lite.js';
-import UserManualDocPrint from './usermanual-doc-print';
-import AddAbbreviationComponent from 'components/userManual/add-abbreviation-content';
-import UserManualDocTableComponent from 'components/userManual/usermanual-doc-table-content';
+import SRSDocPrint from './srs-doc-print';
+import AddAbbreviationComponent from 'components/SRSDocx/add-abbreviation-content';
 
-const UserManualAddDocContentEditorComponent = (props)=>{
-    
+import { addSRSSubChapterNameByChapterId, deleteSRSChapterByChapterId, getSRSMainChapters, getSRSSubChaptersById, updateSRSChapterBySnNo, updateSRSChapterContent, updateSRSChapterNameById, updateSRSchapterPagebreakAndLandscape } from 'services/srs.service';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const SrsAddContentEditor = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -30,9 +46,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     const [snLv2Submit,setSnLv2Submit] = useState(true);
 
     const [projectSelDto, setProjectSelDto] = useState(null);
-     const [versionReleaseDto, setversionReleaseDto] = useState(null);
     const versionElements  = props?.versionElements;
-    console.log('versionElements',versionElements)
+
 
     const [AllChapters, setAllChapters] = useState([]);
     const [ChapterListFirstLvl, setChapterListFirstLvl] = useState([]);
@@ -66,27 +81,20 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     const [chapterSnNos,setChapterSnNos] = useState(new Map());
     const [chapterLv1SnNos,setChapterLv1SnNos] = useState(new Map());
     const [chapterLv2SnNos,setChapterLv2SnNos] = useState(new Map());
-
+     const [versionReleaseDto, setversionReleaseDto] = useState(null);
+       
 
     const [chapterSnId,setChapterSnId] = useState(0);
 
     const [noteOpen, setNoteOpen] = useState(false);
     const [levelForEditChapter, setLevelForEditChapter] = useState(0);
     const [levelForUpdateEditor, setLevelForUpdateEditor] = useState(0);
-
-
-
     const [openDialog, setOpenDialog] = useState(false);
-    // const [openDialog2, setOpenDialog2] = useState(false);
-    // const [openDialog3, setOpenDialog3] = useState(false);
-    // const [openDialog4, setOpenDialog4] = useState(false);
-
-   // const handleNoteOpen = () => setNoteOpen(true);
     const handleNoteClose = () => setNoteOpen(false);
 
     const getDocPDF = (versionElements) => {
 
-        return <UserManualDocPrint action='' revisionElements={versionElements} buttonType={'Button'} />;
+        return <SRSDocPrint action='' revisionElements={versionElements} buttonType={'Button'} />;
        }
 
 
@@ -95,75 +103,61 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     };
   
 
-    useEffect(() => {
-        window.$('#summernote').summernote({
-            airMode: false,
-            tabDisable: true,
-            popover: {
-                table: [
-                    ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
-                    ['delete', ['deleteRow', 'deleteCol', 'deleteTable']]
-                ],
-                image: [
-                    ['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
-                    ['float', ['floatLeft', 'floatRight', 'floatNone']],
-                    ['remove', ['removeMedia']]
-                ],
-                link: [['link', ['linkDialogShow', 'unlink']]],
-                air: [
-                    [
-                        'font',
-                        [
-                            'bold',
-                            'italic',
-                            'underline',
-                            'strikethrough',
-                            'superscript',
-                            'subscript',
-                            'clear'
-                        ]
-                    ]
-                ]
-            },
-            height: '400px',
-            placeholder: 'Enter text here...',
-            toolbar: [
-                ['misc', ['codeview', 'undo', 'redo', 'codeBlock']],
-                [
-                    'font',
-                    [
-                        'bold',
-                        'italic',
-                        'underline',
-                        'strikethrough',
-                        'superscript',
-                        'subscript',
-                        'clear'
-                    ]
-                ],
-                ['fontsize', ['fontname', 'fontsize', 'color']],
-                ['para', ['style0', 'ul', 'ol', 'paragraph', 'height']],
-                ['insert', ['table', 'picture', 'link', 'video', 'hr']],
-                ['customButtons', ['testBtn']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '44', '56', '64', '76', '84', '96'],
-            fontNames: ['Arial', 'Times New Roman', 'Inter', 'Comic Sans MS', 'Courier New', 'Roboto', 'Times', 'MangCau', 'BayBuomHep', 'BaiSau', 'BaiHoc', 'CoDien', 'BucThu', 'KeChuyen', 'MayChu', 'ThoiDai', 'ThuPhap-Ivy', 'ThuPhap-ThienAn'],
-            codeviewFilter: true,
-            codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml|.*onmouseover)[^>]*?>/gi,
-            codeviewIframeFilter: true,
-      
-            
-        });
+   useEffect(() => {
+  const initializeEditor = () => {
+    const $editor = $('#summernote');
+    if ($editor.length) {
+      $editor.summernote({
+        airMode: false,
+        tabDisable: true,
+        popover: {
+          table: [
+            ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
+            ['delete', ['deleteRow', 'deleteCol', 'deleteTable']]
+          ],
+          image: [
+            ['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+            ['float', ['floatLeft', 'floatRight', 'floatNone']],
+            ['remove', ['removeMedia']]
+          ],
+          link: [['link', ['linkDialogShow', 'unlink']]],
+          air: [
+            [
+              'font',
+              [
+                'bold', 'italic', 'underline', 'strikethrough',
+                'superscript', 'subscript', 'clear'
+              ]
+            ]
+          ]
+        },
+        height: 400,
+        placeholder: 'Enter text here...',
+        toolbar: [
+          ['misc', ['codeview', 'undo', 'redo']],
+          ['font', ['bold', 'italic', 'underline', 'clear']],
+          ['fontsize', ['fontname', 'fontsize', 'color']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['table', 'picture', 'link', 'video', 'hr']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '72'],
+        fontNames: ['Arial', 'Times New Roman', 'Inter', 'Comic Sans MS', 'Courier New', 'Roboto'],
+      });
 
-         // Set content
-        $('#summernote').summernote('code', editorContent);
+      $editor.summernote('code', editorContent);
+    }
+  };
 
-        return () => {
-            $('#summernote').summernote('destroy');
-        };
+  setTimeout(initializeEditor, 0);
 
-    }, [editorContent, AllChapters]);
+  return () => {
+    const $editor = $('#summernote');
+    if ($editor.length && $editor.data('summernote')) {
+      $editor.summernote('destroy');
+    }
+  };
+}, [editorContent, AllChapters]);
 
 
 
@@ -173,7 +167,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
       chapterPagebreakOrLandscape.push(editorContentChapterId)
       chapterPagebreakOrLandscape.push(event.target.checked ? 'Y' : 'N')
       chapterPagebreakOrLandscape.push(isLandscape ? 'Y' : 'N')
-        let response = await updatechapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
+        let response = await updateSRSchapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
       };
     
       const handleLandscapeChange = async (event) => {
@@ -182,25 +176,23 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         chapterPagebreakOrLandscape.push(editorContentChapterId)
         chapterPagebreakOrLandscape.push(isPagebreakAfter ? 'Y' : 'N')
         chapterPagebreakOrLandscape.push(event.target.checked ? 'Y' : 'N')
-        let response = await updatechapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
+        let response = await updateSRSchapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
     };
 
+            const fetchData = async () => {
 
-    useEffect(() => {
-        const fetchData = async () => {
-        //  console.log('!!!!',versionElements)
             try {
+           
                 const projectSelectedDto = {
                     projectId: versionElements.projectId
                   };
-                     //docVersionReleaseId
+
+                   //docVersionReleaseId
                        const versionReeaseDto = {
                     docVersionReleaseId: versionElements.docVersionReleaseId
                   };
-
-
                   setProjectSelDto(projectSelectedDto);
-                  setversionReleaseDto(versionReeaseDto)
+                    setversionReleaseDto(versionReeaseDto)
                 getAllChapters(projectSelectedDto,true,versionReeaseDto);
 
             } catch (error) {
@@ -211,6 +203,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         }
 
 
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -226,8 +219,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         try {
             setChapterSnNos(new Map());
             const initialChapterSnNos = new Map();
-            let AllChapters = await getUserManualMainChapters(projectSelectedDtoData,versionElementId.docVersionReleaseId);
-             console.log('all chapter--',AllChapters)
+            console.log("----",versionElementId.docVersionReleaseId)
+            let AllChapters = await getSRSMainChapters(projectSelectedDtoData,versionElementId.docVersionReleaseId);
             if (AllChapters && AllChapters.length > 0 && editorFlag) {
                 setEditorTitle(AllChapters[0][3]);
                 if(AllChapters[0][4] !== null){
@@ -273,7 +266,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         try {
             setChapterLv1SnNos(new Map());
             setChapterLv2SnNos(new Map());
-            const response = await getUserManualSubChaptersById(chapterId);
+            const response = await getSRSSubChaptersById(chapterId);
             if (level === 1) {
                 const initialChapterSnNos = new Map();
                 (response || []).forEach(item =>{
@@ -317,7 +310,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                 let chapterName = new Array;
                 chapterName.push(editChapterId)
                 chapterName.push(editChapterForm.editChapterName)
-                let res = await updateChapterNameById(chapterName);
+                let res = await updateSRSChapterNameById(chapterName);
                 if (res && res > 0) {
                     if (levelForEditChapter > 0) {
                         if (levelForEditChapter === 1) {
@@ -352,13 +345,13 @@ const UserManualAddDocContentEditorComponent = (props)=>{
 
     
     const afterSubmit = async(level0fSnNo) => {
-      //  console.log('sn level in  afterSubmit'+level0fSnNo);
+       
         if(level0fSnNo === 1){
             getAllChapters(projectSelDto,false,versionReleaseDto)
         }else if(level0fSnNo === 2){
             setChapterLv1SnNos(new Map());
             const initialChapterSnNos = new Map();
-            const response = await getUserManualSubChaptersById(chapterSnId);
+            const response = await getSRSSubChaptersById(chapterSnId);
             (response || []).forEach(item =>{
                 initialChapterSnNos.set(item[0],item[7])
             })
@@ -367,7 +360,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         }else if(level0fSnNo === 3){
             setChapterLv2SnNos(new Map());
             const initialChapterSnNos = new Map();
-            const response = await getUserManualSubChaptersById(chapterSnId);
+            const response = await getSRSSubChaptersById(chapterSnId);
             (response || []).forEach(item =>{
                 initialChapterSnNos.set(item[0],item[7])
             })
@@ -408,7 +401,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             message: '',
         });
         if (confirm) {
-            let res = await deleteChapterByChapterId(chapterId);
+            let res = await deleteSRSChapterByChapterId(chapterId);
             if (res && res > 0) {
                 if (level > 0) {
                     if (level === 1) {
@@ -451,8 +444,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             let chaperContent= new Array;
             chaperContent.push(editorContentChapterId)
             chaperContent.push(content)
-            let res = await updateChapterContent(chaperContent);
-          //  console.log('result of updateEditorContent'+JSON.stringify(res))
+            let res = await updateSRSChapterContent(chaperContent);
+          
             if (res) {
              
                 afterSubmit(levelForUpdateEditor);
@@ -495,7 +488,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                 ChapterNameAndId.push(AddNewChapterFormThirdLvl.SubChapterName)
             }
             ChapterNameAndId.push(serialNoAdd)
-            let res = await addSubChapterNameByChapterId(ChapterNameAndId);
+            let res = await addSRSSubChapterNameByChapterId(ChapterNameAndId);
 
             if (res && res > 0) {
                 if (level > 0) {
@@ -629,7 +622,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             message: '',
         });
         if (confirm) {
-                const response = await updateChapterBySnNo((level === 1?chapterSnNos:level === 2?chapterLv1SnNos:chapterLv2SnNos));
+                const response = await updateSRSChapterBySnNo((level === 1?chapterSnNos:level === 2?chapterLv1SnNos:chapterLv2SnNos));
                 if(response && response>0){
       
                 // Trigger state refresh without full reload
@@ -665,9 +658,9 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     };
 
 
-    // const goBack = () => {
-    //     setStatus('list');
-    // };
+    const goBack = () => {
+        setStatus('list');
+    };
 
 
 
@@ -676,25 +669,25 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         case 'abbreviation':
             return <AddAbbreviationComponent versionElements={versionElements}></AddAbbreviationComponent>;
             case 'list':
-                return <UserManualDocRecordsComponent  projectId={versionElements.projectId} ></UserManualDocRecordsComponent>;
+                return <SRSDocRecordsComponent  projectId={versionElements.projectId} ></SRSDocRecordsComponent>;
           case 'addTableContent':
-             return <UserManualDocTableComponent versionElements={versionElements}></UserManualDocTableComponent>
+             return <SRSDocTableComponent versionElements={versionElements}></SRSDocTableComponent>
         default:
         return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflowX: 'hidden' }}>
             <Helmet>
-                <title>VDP - User Manual Content</title>
+                <title>VDP - SRS Content</title>
             </Helmet>
             <Navbar/>
             <Box id="main-container" className='main-container'>
                <Box id="main-breadcrumb">
                     <Breadcrumbs separator=">" aria-label="breadcrumb" className="row headingLink">
                         <Link color="inherit" className="breadcrumb-item links bcLinks" 
-                        href="/user-manual"
+                        href="/srs-document"
                         >
-                            <MdAccountTree></MdAccountTree> User Manual Record
+                            <MdAccountTree></MdAccountTree> SRS Record
                         </Link>
-                        <Typography color="textPrimary"> User Manual Doc Content </Typography>
+                        <Typography color="textPrimary"> SRS Doc Content </Typography>
                     </Breadcrumbs>
                 </Box>
 
@@ -812,7 +805,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                     <Tooltip title="Remove">
                                                                         <span>
                                                                             <Button onClick={() => deleteChapterById(0, chapter[0], 0)} className='delete-icon'>
-                                                                                <i className="material-icons " style={{ color: '#FF0800' }}>remove</i>
+                                                                                <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                             </Button>
                                                                         </span>
                                                                     </Tooltip>
@@ -911,7 +904,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                                             <Tooltip title="Remove">
                                                                                                 <span>
                                                                                                     <Button onClick={() => deleteChapterById(chapter[0], chapter1[0], 1)} className='delete-icon'>
-                                                                                                        <i className="material-icons">remove</i>
+                                                                                                        <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                                                     </Button>
                                                                                                 </span>
                                                                                             </Tooltip>
@@ -992,7 +985,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                                                                 </Tooltip>
                                                                                                                 <Tooltip title="Remove">
                                                                                                                     <Button onClick={() => deleteChapterById(chapter1[0], chapter2[0], 2)} className='delete-icon'>
-                                                                                                                        <i className="material-icons">remove</i>
+                                                                                                                        <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                                                                     </Button>
                                                                                                                 </Tooltip>
                                                                                                             </Grid>
@@ -1190,12 +1183,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                     </Grid>   
 
                     <div className="position-relative m-3">
-                            {/* {docType.split('-')[0] === 'MQAP' ? (
-                            <div className="position-absolute start-0">
-                                   <FaInfoCircle className='animated-button' onClick={handleNoteOpen}/>
-                            </div>
-                            ) : '' }
-                             >*/}
+                         
                                <div className="d-flex justify-content-center">
                                   <Button
                                     variant="contained"
@@ -1218,7 +1206,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
 
 
 
-                   <UserManualDocsAddDocContentAddSectionDialog 
+                   <SRSDocsAddDocContentAddSectionDialog 
                         open={openDialog}
                         onClose={handleCloseSectionDialog}
                         versionElements={versionElements} snNo = {AllChapters.length}
@@ -1340,6 +1328,5 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         );
     };
     };
-    
 
-export default withRouter(UserManualAddDocContentEditorComponent);
+export default withRouter(SrsAddContentEditor);

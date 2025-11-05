@@ -11,7 +11,8 @@ import backgroundImage from '../../assets/images/UserManualBG1.png'
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { getAllAbbreviations, getApprovedDocListByProject, getDocRevisionRecordById, getDocTemplateAttributes, getUserManualAllChapters, getUserManualTableContentList } from 'services/usermanual.service';
+import { getAllAbbreviations,  getDocTemplateAttributes } from 'services/usermanual.service';
+import { getAtpAllChapters, getAtpApprovedDocListByProject, getAtpDocRevisionRecordById, getAtpTableContentList } from 'services/atp.service';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -34,11 +35,11 @@ const getBase64Image = async (url) => {
 
 
 
-const UserManualDocPrint = ({action, revisionElements, buttonType }) => {
+const AtpDocPrint = ({action, revisionElements, buttonType }) => {
 
       const [logoBase64, setLogoBase64] = useState('');
       const [blueBackground, setBlueBackgound] = useState('');
-       
+
     const [triggerEffect, setTriggerEffect] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const [today, setToday] = useState(new Date());
@@ -49,7 +50,7 @@ const UserManualDocPrint = ({action, revisionElements, buttonType }) => {
     const [tableContentList, setTableContentList] = useState([]);
     const [docAbbreviationsResponse, setDocAbbreviationsResponse] = useState([]);
     
-    // console.log(revisionElements)
+
 
 
     useEffect(() => {
@@ -77,17 +78,16 @@ const UserManualDocPrint = ({action, revisionElements, buttonType }) => {
       useEffect(() => {
         const projectSelDto = {
           projectId: revisionElements.projectId,
-          docversionReleaseId: revisionElements.docVersionReleaseId
+           docversionReleaseId: revisionElements.docVersionReleaseId
             };
-
            
-    
+           
         Promise.all([
- 
-        getDocRevisionRecordById(revisionElements.docVersionReleaseId),
-        getUserManualAllChapters(projectSelDto),
-        getApprovedDocListByProject(projectSelDto),
-        getUserManualTableContentList(projectSelDto),
+           
+        getAtpDocRevisionRecordById(revisionElements.docVersionReleaseId),
+        getAtpAllChapters(projectSelDto),
+        getAtpApprovedDocListByProject(projectSelDto),
+        getAtpTableContentList(projectSelDto),
         getAllAbbreviations("0"),
         getDocTemplateAttributes(),
 
@@ -200,7 +200,6 @@ function generateRotatedTextImage(text) {
 
 
     const handlePdfGeneration = () => {
-      const todayMonth = today.toLocaleString('en-US', { month: 'short' }).substring(0, 3);
       
         var allValues = [];
         let mainList = Array.isArray(AllChaptersList) 
@@ -315,114 +314,48 @@ function generateRotatedTextImage(text) {
 
 
         // ----------revision table start----------------
-    // var header1 = [
-    //  // { rowSpan: 2, text: 'SN', style: 'tableLabel' },
-    //   { rowSpan: 2, text: 'Version', style: 'tableLabel' },
-    //   { rowSpan: 2, text: 'Nature/Details of Revision', style: 'tableLabel' },
-    //   { colSpan: 2, text: 'Version/Release Number', style: 'tableLabel' }, {},
-    //   { rowSpan: 2, text: 'Issue date', style: 'tableLabel' },
-    //    //{ rowSpan: 2, text: 'Reference No. Approval', style: 'tableLabel' }
-    // ];
-    // var header2 = [
-    //  // {},
-    //   {},
-    //   {},
-    //   { text: 'From', style: 'tableLabel' },
-    //   { text: 'To', style: 'tableLabel' },
-    //   {}
+    var header1 = [
+      { rowSpan: 2, text: 'Version', style: 'tableLabel' },
+      { rowSpan: 2, text: 'Nature/Details of Revision', style: 'tableLabel' },
+      { colSpan: 2, text: 'Version/Release Number', style: 'tableLabel' }, {},
+      { rowSpan: 2, text: 'Issue date', style: 'tableLabel' },
+      { rowSpan: 2, text: 'Reference No. Approval', style: 'tableLabel' }
+    ];
+    var header2 = [
+      {},
+      {},
+      { text: 'From', style: 'tableLabel' },
+      { text: 'To', style: 'tableLabel' },
+      {},
+      {}
+    ];
+    var DocVersionRelease = [];
+    DocVersionRelease.push(header1);
+    DocVersionRelease.push(header2);
+    for (let i = 0; i < ApprovedVersionReleaseList.length; i++) {
 
+      let datePart = '--'
 
-    // ];
-    // var DocVersionRelease = [];
-    // DocVersionRelease.push(header1);
-    // DocVersionRelease.push(header2);
-    // for (let i = 0; i < ApprovedVersionReleaseList.length; i++) {
+      if (ApprovedVersionReleaseList[i][13] !== null && ApprovedVersionReleaseList[i][13] !== '' && ApprovedVersionReleaseList[i][13] !== undefined) {
+        let dateTimeString = ApprovedVersionReleaseList[i][13].toString();
+        let parts = dateTimeString.split(' ');
 
-    //   let datePart = '--'
+        datePart = parts[0] + ' ' + parts[1] + ' ' + parts[2];
+      }
+      var value = [
 
-    //   if (ApprovedVersionReleaseList[i][13] !== null && ApprovedVersionReleaseList[i][13] !== '' && ApprovedVersionReleaseList[i][13] !== undefined) {
-    //     let dateTimeString = ApprovedVersionReleaseList[i][13].toString();
-    //     let parts = dateTimeString.split(' ');
+        { text: i, style: 'tdData', alignment: 'center' },
+        { text: ApprovedVersionReleaseList[i][3], style: 'tdData' },
+        { text: i > 0 ? 'V' + ApprovedVersionReleaseList[i - 1][5] + '-R' + ApprovedVersionReleaseList[i - 1][6] : '--', style: 'tdData', alignment: 'center', },
+        { text: 'V' + ApprovedVersionReleaseList[i][5] + '-R' + ApprovedVersionReleaseList[i][6], style: 'tdData', alignment: 'center', },
+        { text: datePart, alignment: 'center', style: 'tdData' },
+        { text: 'V' + ApprovedVersionReleaseList[i][5] + '-R' + ApprovedVersionReleaseList[i][6], style: 'tdData', alignment: 'center', },
+      ];
 
-    //     datePart = parts[0] + ' ' + parts[1] + ' ' + parts[2];
-    //   }
-    //   var value = [
-
-    //    //{ text: i, style: 'tdData', alignment: 'center' },
-    //     { text: ApprovedVersionReleaseList[i][3], style: 'tdData' },
-    //     { text: i > 0 ? 'V' + ApprovedVersionReleaseList[i - 1][5] + '-R' + ApprovedVersionReleaseList[i - 1][6] : '--', style: 'tdData', alignment: 'center', },
-    //    { text: 'V' + ApprovedVersionReleaseList[i][5] + '-R' + ApprovedVersionReleaseList[i][6], style: 'tdData', alignment: 'center' }, // From
-    // { text: 'V' + ApprovedVersionReleaseList[i][5] + '-R' + ApprovedVersionReleaseList[i][6], style: 'tdData', alignment: 'center' }, // To
-    //     { text: datePart, alignment: 'center', style: 'tdData' },
-    //    //{ text: 'V' + ApprovedVersionReleaseList[i][5] + '-R' + ApprovedVersionReleaseList[i][6], style: 'tdData', alignment: 'center', },
-        
-    //   ];
-
-    //   DocVersionRelease.push(value);
-    //   console.log('ApprovedVersionReleaseList--',ApprovedVersionReleaseList)
-    // }
+      DocVersionRelease.push(value);
+    }
 
     // ----------revision table end----------------
-
-        // ----------Approval page table start----------------
-// var approvalpage = [];
-// approvalpage.push([{ stack: [{ text: 'Quality Assurance Management Plan (QAMP)', bold: true, alignment: 'center', fontSize: 12, margin: [0, 10] }], colSpan: 3 },{},{}]);
-// approvalpage.push([
-//   {stack: [{ text: 'Document Number:', style: 'tableLabel' },{text: today.getFullYear()  }]},  
-//   { stack: [{ text: 'Version:', style: 'tableLabel' }, { text: 'V' + revisionElements.versionNo, style: 'tdData' }] },
-//   { stack: [{ text: 'Release:', style: 'tableLabel' }, { text: 'R' + revisionElements.releaseNo, style: 'tdData' }] }
-// ]);
-// approvalpage.push([
-//   { stack: [{ text: '' }] },
-//   { stack: [{ text: 'Name & Designation', style: 'tableLabel', alignment: 'center', margin: [0, 15, 0, 0], }], },
-//   { stack: [{ text: 'Signature', style: 'tableLabel', alignment: 'center', margin: [0, 15, 0, 0], }], },
-// ]);
-
-// approvalpage.push([
-//   { stack: [{ text: 'Prepared By:', style: 'tableLabel',margin: [0, 15, 0, 50] }] },
-//   { stack: [{ text:'', fontSize: 10 }] },
-//   { stack: [{ text: '', style: 'tdData' }], },
-// ]);
-// approvalpage.push([
-//   {},
-//   { stack: [{ text:'', fontSize: 10 }] },
-//   { stack: [{ text: '', style: 'tdData' }], },
-// ]);
-
-// approvalpage.push([
-//   { stack: [{ text: 'Reviewed by:', style: 'tableLabel',margin: [0, 15, 0, 50] }] },
-//   { stack: [{ text:'', fontSize: 10 }] },
-//   { stack: [{ text:'', fontSize: 10 }] },
-// ]);
-//   approvalpage.push([
-//     { stack: [{ text: 'Approved by:', style: 'tableLabel' ,margin: [0, 15, 0, 50]}] },
-//     { stack: [{ text:'', fontSize: 10 }] },
-//   { stack: [{ text:'', fontSize: 10 }] },
-//   ]);
-
-
-
-// ----------Approval page table end----------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         // ----------Document Abbreviation table start----------------
         let docAbbreviations = [];
@@ -431,13 +364,12 @@ function generateRotatedTextImage(text) {
           docAbbreviations.push([{ text: (i + 1), style: 'tdData', alignment: 'center' }, { text: docAbbreviationsResponse[i].abbreviation, style: 'tdData', alignment: 'left' }, { text: docAbbreviationsResponse[i].meaning, style: 'tdData' }])
         }
     
-       
         // ----------Document Abbreviation table end----------------
 
     //////////////////////////////////////////////////User Manual Doc Definition Start/////////////////////////////////////////////////////////////////////////
 let docDefinition = {
   info: {
-    title: "User Manual Print",
+    title: "ATP Print",
   },
   pageSize: 'A4',
   pageOrientation: 'portrait',
@@ -478,7 +410,7 @@ let docDefinition = {
                 stack: [{
                   columns: [
     
-                    { text: today.getFullYear() + '/User Manual/' + revisionElements.projectMasterDto.projectShortName + '/' + (ApprovedVersionReleaseList.length), fontSize : 9,linkToDestination: 'TOC_PAGE'},
+                    { text: today.getFullYear() + '/ATP/' + revisionElements.projectMasterDto.projectShortName + '/' + (ApprovedVersionReleaseList.length), fontSize : 9,linkToDestination: 'TOC_PAGE'},
                     { text: 'RESTRICTED', style: 'footerNote',linkToDestination: 'TOC_PAGE' },
                     {
                       text: "Page " + currentPage.toString() + ' of ' + pageCount, margin: [45, 0, 0, 0], fontSize : 9,linkToDestination: 'TOC_PAGE' ,
@@ -549,9 +481,9 @@ let docDefinition = {
   if (currentPage === 1) {
     backgroundElements.push({
       image: blueBackground,
-      width: pageSize.width , 
-      height: pageSize.height , 
-      absolutePosition: { x: 0, y: 0 } 
+      width: pageSize.width , // reduced by border's left+right padding (20+20)
+      height: pageSize.height , // reduced by border's top+bottom padding
+      absolutePosition: { x: 0, y: 0 } // aligned with border's start position
     });
   }
 
@@ -625,7 +557,7 @@ let docDefinition = {
         
         // Document title with gradient accent
         { 
-          text: 'User Manual for\n' + revisionElements.projectMasterDto.projectName, 
+          text: 'Acceptance Test Plan for\n' + revisionElements.projectMasterDto.projectName, 
           style: 'DocumentName', 
           alignment: 'center',
           margin: [0, 20, 0, 25]
@@ -648,7 +580,6 @@ let docDefinition = {
 
         // 1. Boxed company name + address block
 // 1. Boxed company name + address block (centered with blue border)
-
 {
   style: 'LabAdressPin',
   margin: [0, 10, 0, 0],
@@ -758,20 +689,19 @@ let docDefinition = {
       ]
     },
     
-          {
-              text: todayMonth + '-' + today.getFullYear(), 
-              style: 'DateDetails', 
-              alignment: 'right', 
-              margin: [0, 5, 0, 0]
-            },
+          // {
+            //   text: todayMonth + '-' + today.getFullYear(), 
+            //   style: 'DateDetails', 
+            //   alignment: 'right', 
+            //   margin: [0, 200, 0, 0]
+            // },
             // {
             //   text: 'RECORD OF AMENDMENTS', bold: true, alignment: 'center', fontSize: 14, margin: [0, 10, 0, 10]
             // },
             // {
             //   table: {
             //     headerRows: 2,
-            //    //widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
-            //     widths: [20, 200, 120, 100, 'auto'],
+            //     widths: ['auto', 'auto', 30, 30, 'auto', 'auto'],
             //     body: DocVersionRelease
             //   },
             //   pageBreak: 'after'
@@ -782,7 +712,7 @@ let docDefinition = {
             // {
             //   table: {
             //     widths: [20, 200, 120, 100],
-            //     body: DocVersionRelease
+            //     body: docDistributionList
             //   },
             //   pageBreak: 'after'
             // },
@@ -793,17 +723,16 @@ let docDefinition = {
             //   table: {
             //     widths: [105, 205, 155],
             //     heights: [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
-            //     body: DocVersionRelease
+            //     body: docSummary
             //   },
             //   pageBreak: 'after'
             // },
-            
             // {
             //   text: 'APPROVAL PAGE', bold: true, alignment: 'center', fontSize: 14, margin: [0, 10, 0, 10]
             // },
             // {
             //   table: {
-            //     widths: ['auto', 'auto', 'auto'],
+            //     widths: [100, 'auto', 120, 130],
             //     heights: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 30, 50, 50],
             //     body: approvalpage
             //   },
@@ -828,6 +757,7 @@ let docDefinition = {
 
 
         },
+
         ...(tableContentList?.filter(data => data.contentType === 'T').length > 0?
           [
              {
@@ -857,9 +787,10 @@ let docDefinition = {
               },
               layout: 'lightHorizontalLines'
             },
-          ]:[]),
-
-            ...(tableContentList?.filter(data => data.contentType === 'F').length > 0?[
+          ]:[] ),
+          ...(
+            tableContentList?.filter(data => data.contentType === 'F').length > 0?
+            [
             {
               text: 'TABLE OF FIGURES',
               style: 'header',
@@ -886,65 +817,71 @@ let docDefinition = {
                 )
               },
               layout: 'lightHorizontalLines'
-            },]:[]),
+            },
+          ]:[]
+          ),
             allValues,
             
              // Add a "Thank You" page as the last page
+   {
+  stack: [
+    {
+      image: blueBackground,   // ✅ directly add background image here
+      width: 595,              // A4 width (adjust if needed)
+      height: 842,             // A4 height
+      absolutePosition: { x: 0, y: 0 } // fills the page
+    },
     {
       text: 'Thank You',
-      pageBreak: 'before',
       alignment: 'center',
       fontSize: 46,
       bold: true,
-      margin: [0, 200, 0, 30], // centers vertically
-      pageOrientation: 'portrait', // optional
-        color: '#0072ff'
+      margin: [0, 200, 0, 30],
+      color: '#0072ff'
     },
-      {
-              stack: [
-                {
-                  text: 'Vedant Tech Solutions',
-                  style: 'CompanyName',
-                  alignment: 'center',
-                  margin: [0, 10, 0, 5],
-                  color: '#0072ff'
-                },
-                {
-                  text: [
-                    '#42, 2nd Floor, Sakkamma Tower 2,\n',
-                    'Near Maheshwaramma Temple Road,\n',
-                    'B Chikkanna Layout, Mahadevapura,\n',
-                    'Bengaluru - 560048'
-                  ],
-                  alignment: 'center',
-                  margin: [0, 0, 0, 5]
-                }
-              ],
-              alignment: 'center',
-              margin: [5, 5, 5, 5]
-            },
-            {
-  text: [
-    { text: 'Website: ', bold: true },
     {
-      text: 'www.vedts.com',
-      link: 'https://www.vedts.com/',
-      color: '#0072ff',
-      decoration: 'underline'
+      text: 'Vedant Tech Solutions',
+      style: 'CompanyName',
+      alignment: 'center',
+      margin: [0, 10, 0, 5],
+      color: '#0072ff'
     },
-    { text: '\u00A0\u00A0\u00A0' },
-    { text: 'Phone: ', bold: true },
-    { text: '080-41620330\n', color: '#0072ff' }
+    {
+      text: [
+        '#42, 2nd Floor, Sakkamma Tower 2,\n',
+        'Near Maheshwaramma Temple Road,\n',
+        'B Chikkanna Layout, Mahadevapura,\n',
+        'Bengaluru - 560048'
+      ],
+      alignment: 'center',
+      margin: [0, 0, 0, 5]
+    },
+    {
+      text: [
+        { text: 'Website: ', bold: true },
+        {
+          text: 'www.vedts.com',
+          link: 'https://www.vedts.com/',
+          color: '#0072ff',
+          decoration: 'underline'
+        },
+        { text: '\u00A0\u00A0\u00A0' },
+        { text: 'Phone: ', bold: true },
+        { text: '080-41620330\n', color: '#0072ff' }
+      ],
+      alignment: 'center',
+      margin: [0, 10, 0, 0]
+    },
+    {
+      text: [
+        { text: 'Email: ', bold: true },
+        { text: 'vedantechsolutions@gmail.com', color: '#0072ff' }
+      ],
+      alignment: 'center'
+    }
   ],
-  alignment: 'center',
-  margin: [0, 10, 0, 0]  // adds a break after the address box
-},
-{
-  text: [
-    { text: 'Email: ', bold: true },
-    { text: 'vedantechsolutions@gmail.com', color: '#0072ff' }
-  ],
-  alignment: 'center'
+  pageBreak: 'before',
+  margin: [0, 0, 0, 0]
 },
        
 
@@ -1027,7 +964,7 @@ let docDefinition = {
             },
             firstLvlContent: {
                 fontSize: DocTemplateAttributes[4],
-                margin: [25, 10, 0, 10],
+                margin: [15, 10, 0, 10],
                 alignment: 'justify',
               
             },
@@ -1054,7 +991,7 @@ let docDefinition = {
             },
             secondLvlContent: {
                 fontSize: DocTemplateAttributes[4],
-                margin: [35, 0, 0, 0],
+                margin: [30, 10, 0, 10],
                 alignment: 'justify',
             },
             tableLabel: {
@@ -1138,4 +1075,4 @@ let docDefinition = {
       );
     
       }
-    export default UserManualDocPrint;
+    export default AtpDocPrint;

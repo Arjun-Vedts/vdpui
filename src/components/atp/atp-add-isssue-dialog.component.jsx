@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Switch, Stack, Typography, styled, FormHelperText, MenuItem, Select } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Switch, Select, MenuItem, Stack, Typography, styled, FormHelperText } from '@mui/material';
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import AlertConfirmation from "common/AlertConfirmation.component";
-import { addNewUserManualRelease, getDataAddedTemplates } from "services/usermanual.service";
 
-const UserManualDocAddIssueDialog = ({ open, onClose, versionElements,projectId,onConfirm}) => {
+import { addNewAtpRelease, DataATPAddedTemplates } from "services/atp.service";
+
+const AtpDocAddIssueDialog = ({ open, onClose, versionElements,projectId,onConfirm}) => {
     const [error, setError] = useState(null);
-    //const [] =useState('');
-
+     const [dataAddedTemplatesList, setDataAddedTemplatesList] = useState([]);
     const [newAmendVersion, setNewAmendVersion] = useState('');
-    const [dataAddedTemplatesList, setDataAddedTemplatesList] = useState([]);
+  
     const [initialValues, setInitialValues] = useState({
         isNewIssue: false,
         currentVersion: '',
@@ -46,23 +46,24 @@ const UserManualDocAddIssueDialog = ({ open, onClose, versionElements,projectId,
 
 
         fetchData();
-         setDataAddedTemplates();
-  
-  
-  
-  
+         setDataSRSAddedTemplates();
     }, [open]);
-        
-      
-    const setDataAddedTemplates = async () => {
-        try {
-         
-            let list = await getDataAddedTemplates(projectId);
-            setDataAddedTemplatesList(list);
-        } catch (error) {
-            setError('An error occurred');
-        }
-    };
+
+
+   const setDataSRSAddedTemplates = async () => {
+            try {
+             
+                let list = await DataATPAddedTemplates(projectId);
+              
+                setDataAddedTemplatesList(list);
+            } catch (error) {
+                setError('An error occurred');
+            }
+        };
+
+
+
+
 
     const DialogTitleStyle = {
         backgroundColor: '#009cff', color: 'white'
@@ -81,18 +82,15 @@ const UserManualDocAddIssueDialog = ({ open, onClose, versionElements,projectId,
             ...values,
             newAmendVersion: newAmendVersion,
             projectId: projectId,
-            docVersionRelaseId:versionElements.docVersionReleaseId,
-            
-
+              docVersionRelaseId:versionElements.docVersionReleaseId
         };
-        console.log('values-',values)
         setFormData(addVerionDto);
         const confirm = await AlertConfirmation({
             title: 'Are you sure to submit this form?',
             message: '',
         });
         if (confirm) {
-            let response = await addNewUserManualRelease(addVerionDto);
+            let response = await addNewAtpRelease(addVerionDto);
             if (onConfirm) onConfirm(response);
             onClose(false)
 
@@ -209,24 +207,20 @@ const UserManualDocAddIssueDialog = ({ open, onClose, versionElements,projectId,
                                             />
                                         </div>
 
-                                        {versionElements.length === 0 && (
+                                         {versionElements.length === 0 && (
                                                 <div className="col-md-5">
-                                     <FormControl fullWidth error={Boolean(touched.copyTemplateFrom && errors.copyTemplateFrom)}>
-                                      <InputLabel>Copy Template From</InputLabel>
-                                <Select name="copyTemplateFrom" label="Copy Template From" value={values.copyTemplateFrom} onChange={(event) => {setFieldValue("copyTemplateFrom", event.target.value);}}>
-                                     {dataAddedTemplatesList && dataAddedTemplatesList.map((item, index) => (
-                                                    <MenuItem key={index} value={`${item[0]}//${item[2]}//${item[1]}`}>
-                                                         {item[2]}             {/* ({item[3]}) - {item[4]} */}
-                                                    </MenuItem>
-                                                    ))} 
-                                       </Select>
+                                                    <FormControl fullWidth error={Boolean(touched.copyTemplateFrom && errors.copyTemplateFrom)}>
+                                                     <InputLabel>Copy Template From</InputLabel>
+                                                     <Select name="copyTemplateFrom" label="Copy Template From" value={values.copyTemplateFrom} onChange={(event) => {setFieldValue("copyTemplateFrom", event.target.value);}}>
+                                                    {dataAddedTemplatesList && dataAddedTemplatesList.map((item, index) => (
+                                                     <MenuItem key={index} value={`${item[0]}//${item[2]}//${item[1]}`}>
+                                                        {item[2]}             {/* ({item[3]}) - {item[4]} */} </MenuItem>))}  </Select>
+                                                                                 
+                                                       {touched.copyTemplateFrom && errors.copyTemplateFrom && (
+                                                           <FormHelperText>{errors.copyTemplateFrom}</FormHelperText>)}
+                                                              </FormControl></div>)}
 
-                                  {touched.copyTemplateFrom && errors.copyTemplateFrom && (
-                                    <FormHelperText>{errors.copyTemplateFrom}</FormHelperText>
-                                         )}
-                                   </FormControl>
-                                     </div>)}
-
+                                       
                                     </div>
                                 </div>
                                 <div className="col-md-12 mt-3">
@@ -281,4 +275,4 @@ const UserManualDocAddIssueDialog = ({ open, onClose, versionElements,projectId,
 
 
 };
-    export default UserManualDocAddIssueDialog;
+    export default AtpDocAddIssueDialog;

@@ -344,7 +344,7 @@ export const addProject = async(data) =>{
 export const updateProject = async(data) =>{
     try {
       
-        console.log(' data:', data);
+      
             const response = await axios.put(
           `${API_URL}update-project-master`,
            data,

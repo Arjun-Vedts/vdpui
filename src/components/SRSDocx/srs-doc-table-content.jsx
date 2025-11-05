@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Tab, Tabs, Tooltip } from "@mui/material";
+import { Box, Button, IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import withRouter from "common/with-router";
 import Datatable from "components/datatable/Datatable";
 import Navbar from "components/navbar/Navbar";
@@ -6,13 +6,17 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { MdEditSquare, MdImageSearch, MdTableView } from "react-icons/md";
 
-import UserManualAddDocContentEditorComponent from 'components/userManual/usermanual-add-content-editor';
-import { getUserManualTableContentById, getUserManualTableContentList } from "services/usermanual.service";
-import UserManualDocContentDialog from "./usermanual-doc-content-dialog";
+
+import { getSRSTableContentById, getSRSTableContentList } from "services/srs.service";
+
+import SRSAddDocContentEditor from 'components/SRSDocx/srs-add-content-editor.component';
+import SrsDocContentDialogComponent from "./srs-doc-content-dialog.component";
+
+//import srsDocContentDialog from "components/SRSDocx/srs-add-content-section-dialog"
 
 
 
-const UserManualDocTableComponent = (props)=>{
+const SRSDocTableComponent = (props)=>{
 
     
     const versionElements = props?.versionElements;
@@ -32,7 +36,7 @@ const UserManualDocTableComponent = (props)=>{
             const projectSelDtoData = {
                 projectId: versionElements.projectId
                 };
-            let tableContentList =  await getUserManualTableContentList(projectSelDtoData);
+            let tableContentList =  await getSRSTableContentList(projectSelDtoData);
             setTableContentList(tableContentList);
             setProjectSelDto(projectSelDtoData);
         } catch (error) {
@@ -50,7 +54,7 @@ const UserManualDocTableComponent = (props)=>{
     };
 
     const handleEditContent = async (contentId) => {
-        let data = await getUserManualTableContentById(contentId);
+        let data = await getSRSTableContentById(contentId);
         if (!Array.isArray(data)) {
             data = [data];
         }
@@ -133,7 +137,7 @@ const UserManualDocTableComponent = (props)=>{
     
 switch (status) {
     case 'umDocContent':
-        return <UserManualAddDocContentEditorComponent versionElements={versionElements}></UserManualAddDocContentEditorComponent>;
+        return <SRSAddDocContentEditor versionElements={versionElements}></SRSAddDocContentEditor>;
     default:
     return (
     <Box id="qms-wrapper">
@@ -180,7 +184,7 @@ switch (status) {
                             <br />
                     </Box>}
                 </Box>
-                <UserManualDocContentDialog open={open} onClose={() => setOpen(false)} qaqtDocData={ProjectSelDto} type={contentType} 
+                <SrsDocContentDialogComponent open={open} onClose={() => setOpen(false)} qaqtDocData={ProjectSelDto} type={contentType} 
                       fetchData={fetchData} editData={selectedRowData} />
             </Box>
     </Box>
@@ -192,4 +196,4 @@ switch (status) {
 
 };
 
-export default withRouter(UserManualDocTableComponent);
+export default withRouter(SRSDocTableComponent);

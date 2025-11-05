@@ -1,7 +1,8 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Checkbox, TextField, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Checkbox, TextField, Box, Snackbar, Alert } from '@mui/material';
 import AlertConfirmation from 'common/AlertConfirmation.component';
 import { useEffect, useState } from 'react';
-import UserManualDocSections, {addNewChapterSection, AddSectionIdsDto, getUnAddedChapters, unAddListToAddList } from 'services/usermanual.service';
+import srsDocSections, { addSrsNewChapterSection, getSRSUnAddedChapterlist, SRSAddListToAddList } from 'services/srs.service';
+import { AddSectionIdsDto } from 'services/usermanual.service';
 
 const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionElements,snNo }) => {
 
@@ -11,7 +12,7 @@ const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionEle
     const [sectionIds, setSectionIds] = useState([]);
     const [newSectionName, setNewSectionName] = useState('');
     const [docVersionReleaseId, setdocVersionReleaseId] = useState(null);
-     //docVersionReleaseId
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -21,14 +22,12 @@ const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionEle
               
                 const projectSelDtoData = {
                   projectId: versionElements.projectId
-
                 };
 
-                const releaseIdData = {
+                 const releaseIdData = {
                   releaseId: versionElements.docVersionReleaseId
 
                 };
-                //console.log("versionElements---",versionElements)
                 setProjectSelDto(projectSelDtoData);
                 setdocVersionReleaseId(releaseIdData);
                 getUnAddedChapterlist(projectSelDtoData);
@@ -43,7 +42,7 @@ const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionEle
 
     const getUnAddedChapterlist = async (projectSelDtoArg) => {
         try {
-            let unAddedChapterList = await getUnAddedChapters(projectSelDtoArg);
+            let unAddedChapterList = await getSRSUnAddedChapterlist(projectSelDtoArg);
             setUnAddedChapterList(unAddedChapterList);
         } catch (error) {
             setError('An error occurred');
@@ -65,11 +64,10 @@ const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionEle
         });
         if (confirm) {
             
-        let res = await unAddListToAddList(new AddSectionIdsDto(sectionIds,snNo));
-        // console.log('res reult :'+res);
+        let res = await SRSAddListToAddList(new AddSectionIdsDto(sectionIds,snNo));
+       //  console.log('res reult :'+res);
         if (res) {
-            getUnAddedChapterlist(projectSelDto);
-
+            getSRSUnAddedChapterlist(projectSelDto);
             Swal.fire({
                 icon: "success",
                 title: 'Success',
@@ -100,9 +98,9 @@ const UserManualDocsAddDocContentAddSectionDialog = ({ open, onClose, versionEle
         });
         if (confirm) {
 
-            let docSections = new UserManualDocSections(0, newSectionName, projectSelDto.projectId,null,null,null,null, 1,docVersionReleaseId.releaseId);
+            let docSections = new srsDocSections(0, newSectionName, projectSelDto.projectId,null,null,null,null, 1,docVersionReleaseId.releaseId);
 
-            let res = await addNewChapterSection(docSections);
+            let res = await addSrsNewChapterSection(docSections);
     
             if (res && res.sectionId>0) {
                 getUnAddedChapterlist(projectSelDto);

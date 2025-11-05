@@ -89,8 +89,14 @@ const WordComponent = () => {
       return;
     }
 
+
+
+
+
+
+
  // Build the document content similar to the docDefinition
- const titleType = "User Manual";
+ const titleType =  "User Manual";
  const projectShortName = projectSelected ? projectSelected : "";
  const lengthOfDocument = length ? length : "";
  const docTemplateAttributes = templateAttributes ? templateAttributes : "";

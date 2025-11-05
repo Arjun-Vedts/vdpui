@@ -259,7 +259,7 @@ const ProjectAddEdit = ({mode,projectMasterData}) => {
                                 name="projectDescription"
                                 className="form-control-project mb-2"
                                 placeholder="Enter Project Description"
-                                maxLength="100"
+                                maxLength="1000"
                                 minLength="3"
                               
                                 />

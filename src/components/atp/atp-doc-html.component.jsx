@@ -1,9 +1,10 @@
 import React, { useEffect,useState } from "react";
 import WordComponent from "static/converter.word.component";
-import PdfComponent from  "static/converter.pdf.component";
 import vedtslogo from '../../assets/images/vedtsLogo.png';
-import { getAllAbbreviations, getApprovedDocListByProject, getDocRevisionRecordById, getDocTemplateAttributes, getUserManualAllChapters, getUserManualTableContentList } from 'services/usermanual.service';
+import { getAllAbbreviations,  getDocTemplateAttributes } from 'services/usermanual.service';
 
+
+import { getAtpAllChapters, getAtpApprovedDocListByProject, getAtpDocRevisionRecordById, getAtpTableContentList } from 'services/atp.service';
 
 
 const getBase64Image = async (url) => {
@@ -18,7 +19,7 @@ const getBase64Image = async (url) => {
   });
 };
 
-const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
+const AtpDocHtmlComponent = ({ id,printType, revisionElements}) => {
 
   //const pdfGenerator = PdfComponent();
   const wordGenerator = WordComponent();
@@ -39,7 +40,7 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
     const [isContentComplete, setIsContentComplete] = useState(false);  
         const [isReady, setIsReady] = useState(false);
 
-  const expectedId = "user-manual-document-html"; // Permanent ID
+  const expectedId = "atp-doc-html"; // Permanent ID
   const [htmlDocumentContent, setHtmlDocumentContent] = useState("");
 
     useEffect(() => {
@@ -78,12 +79,19 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
         
             Promise.all([
      
-            getDocRevisionRecordById(revisionElements.docVersionReleaseId),
-            getUserManualAllChapters(projectSelDto),
-            getApprovedDocListByProject(projectSelDto),
-            getUserManualTableContentList(projectSelDto),
-            getAllAbbreviations("0"),
-            getDocTemplateAttributes(),
+            // getDocRevisionRecordById(revisionElements.docVersionReleaseId),
+            // getUserManualAllChapters(projectSelDto),
+            // getApprovedDocListByProject(projectSelDto),
+            // getUserManualTableContentList(projectSelDto),
+            // getAllAbbreviations("0"),
+            // getDocTemplateAttributes(),
+
+            getAtpDocRevisionRecordById(revisionElements.docVersionReleaseId),
+                    getAtpAllChapters(projectSelDto),
+                    getAtpApprovedDocListByProject(projectSelDto),
+                    getAtpTableContentList(projectSelDto),
+                    getAllAbbreviations("0"),
+                    getDocTemplateAttributes(),
 
             //getAllUserManualDocVersionDtoListByProject(projectSelDto),
     
@@ -211,7 +219,7 @@ let htmlContent = '';
 
     const documentNameContent = `
   <div style="text-align: center;font-size: 20pt; color: #1660B2;font-weight: bold; margin-top: 100px; padding: 0; line-height: 1;">
-      User Manual <br> for ${revisionElements.projectMasterDto.projectName}
+      Acceptance Test Plan <br> for ${revisionElements.projectMasterDto.projectName}
   </div>
 `;
 
@@ -533,10 +541,10 @@ setIsContentComplete(true);
          
   
               if (printType === "pdf") {
-                  console.log("Generating PDF...");
+              
                  // pdfGenerator.generatePDF(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               } else if (printType === "word") {
-                  console.log("Generating Word document...");
+              
                   wordGenerator.generateWord(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               }
   
@@ -559,6 +567,6 @@ setIsContentComplete(true);
       // );
 
 
-export default UserManualDocHtmlComponent;
+export default AtpDocHtmlComponent;
 
  

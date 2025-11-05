@@ -46,9 +46,10 @@ export const updatechapterPagebreakAndLandscape = async (chapterPagebreakOrLands
 }
 
 
-export const getUserManualMainChapters = async (projectSelDto) => {
+export const getUserManualMainChapters = async (projectSelDto,docversionReleaseId) => {
     try {
-        return (await axios.post(`${API_URL}user-manual-main-chapter-list`, projectSelDto,
+        const body = { ...projectSelDto, docversionReleaseId};
+        return (await axios.post(`${API_URL}user-manual-main-chapter-list`, body,
              { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
     } catch (error) {
         console.error('Error occurred in getUserManualMainChapters', error);
@@ -152,7 +153,9 @@ class UserManualDocSections {
       createdDate,
       modifiedBy,
       modifiedDate ,
-      isActive = 0
+      isActive = 0,
+      docVersionReleaseId =0
+      
     ) {
       this.sectionId = sectionId;
       this.sectionName = sectionName;
@@ -162,6 +165,7 @@ class UserManualDocSections {
       this.modifiedBy = modifiedBy;
       this.modifiedDate = modifiedDate;
       this.isActive = isActive;
+      this.docVersionReleaseId=docVersionReleaseId;
     }
   }
 
@@ -170,6 +174,7 @@ class UserManualDocSections {
 
   export const addNewChapterSection = async (userManualDocSections) => {
     try {
+        console.log("userManualDocSections--",userManualDocSections)
         return (await axios.post(`${API_URL}user-manual-add-new-section`, userManualDocSections, 
             { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
     } catch (error) {
@@ -177,6 +182,23 @@ class UserManualDocSections {
         throw error;
     }
 }
+
+ export const forwardUserManual = async (userManualDocSections) => {
+    try {
+        console.log("userManualDocSections",userManualDocSections);
+        return (await axios.post(`${API_URL}user-manual-forward`, userManualDocSections, 
+            { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+    } catch (error) {
+        console.error('Error occurred in forwardUserManual', error);
+        throw error;
+    }
+}
+
+
+
+
+
+
 
 
 export const unAddListToAddList = async (addSectionIdsDto) => {
@@ -310,3 +332,74 @@ export const getDocTemplateAttributes = async () => {
         throw error;
     }
 }
+
+
+// For returning the user manual
+export const userManualReturnReview = async (remarks,id) => {
+  try {
+   return (await axios.post(`${API_URL}return-UserManual-review/${id}`, remarks, { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+   // return response.data;
+  } catch (error) {
+    console.error("Error returning user manual:", error);
+    throw error;
+  }
+};
+
+//userManualRecommendReview
+export const userManualRecommendReview = async (remarks,id) => {
+  try {
+   return (await axios.post(`${API_URL}recommend-UserManual-review/${id}`, remarks, { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+   // return response.data;
+  } catch (error) {
+    console.error("Error recommending user manual:", error);
+    throw error;
+  }
+};
+
+
+//userManualReturnApproval
+export const userManualReturnApproval = async (remarks,id) => {
+  try {
+   return (await axios.post(`${API_URL}return-UserManual-approved/${id}`, remarks, { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+  } catch (error) {
+    console.error("Error returning user manual:", error);
+    throw error;
+  }
+}
+
+//userManualApproved
+export const userManualApproved = async (remarks,id) => {
+  try {
+   return (await axios.post(`${API_URL}approved-UserManual/${id}`, remarks, { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+  } catch (error) {
+    console.error("Error returning user manual:", error);
+    throw error;
+  }
+}
+
+//userManualReForward
+export const userManualReForward = async (remarks,id) => {
+  try {
+   return (await axios.post(`${API_URL}return-UserManual-reforward/${id}`, remarks, { headers: { 'Content-Type': 'application/json', ...authHeader() } })).data;
+  } catch (error) {
+    console.error("Error returning user manual:", error);
+    throw error;
+  }
+}
+
+//getDataAddedTemplates
+export const getDataAddedTemplates = async (projectId) => {
+    try {
+        const response = await axios.get(`${API_URL}getDataAddedTemplates.htm`, {
+            params: { projectId }, 
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeader(), 
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error occurred in getDataAddedTemplates', error);
+        throw error;
+    }
+};

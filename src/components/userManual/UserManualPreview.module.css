@@ -1,0 +1,35 @@
+.labelName {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.employee-text textarea {
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 10px 12px;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-text textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}
+
+.employee-text {
+  max-width: 100%;
+}
+
+.card {
+  background: #ffffff;
+}
+
+.custom-heading {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.text-primary {
+  color: #0056b3 !important;
+}
