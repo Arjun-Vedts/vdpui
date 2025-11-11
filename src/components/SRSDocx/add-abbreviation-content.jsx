@@ -1,16 +1,19 @@
 import withRouter from "common/with-router";
 import Navbar from "components/navbar/Navbar";
 import React, { useEffect, useState } from 'react';
-import './user-manual-add-doc-content.css';
+import './srs-manual-add-doc-content.css';
 import { FaTrash } from "react-icons/fa";
-import {  Box, Button, Card, Checkbox, Dialog, DialogContent, DialogTitle, Grid, IconButton, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Snackbar, TextField, Typography } from "@mui/material";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa6";
 import * as Yup from "yup";
-import UserManualAddDocContentEditorComponent from 'components/userManual/usermanual-add-content-editor';
+
 import { addNewAbbreviationList, getAllAbbreviations, getNotReqAbbreviationIds, updateNotReqAbbreviationIds } from "services/usermanual.service";
 import AlertConfirmation from "common/AlertConfirmation.component";
+
+import SrsAddContentEditorComponent from "./srs-add-content-editor.component";
+import { getNotReqAbbreviationIdsSRS, updateSRSNotReqAbbreviationIds } from "services/srs.service";
 
 const AbbreviationMaster = (props)=>{
 
@@ -44,7 +47,7 @@ useEffect(() => {
         let list = await getAllAbbreviations("0");
         const sortedList = list.sort((a, b) =>  a.abbreviation.localeCompare(b.abbreviation));
         setAllAbbreviationList(sortedList);
-        let revistionRecord = await getNotReqAbbreviationIds(revisionData.docVersionReleaseId);
+        let revistionRecord = await getNotReqAbbreviationIdsSRS(revisionData.docVersionReleaseId);
         let abbreviationIds = revistionRecord ? revistionRecord.split(",").map(Number) : ["0"];
         const mainlist = sortedList.filter((item) => !abbreviationIds.includes(item.abbreviationId));
         let deletedList = sortedList.filter((item) =>
@@ -119,13 +122,13 @@ const handleFilterByLetter = (letter) => {
             });
             if (confirm) {
                 
-      let revistionRecord = await getNotReqAbbreviationIds(revisionData.docVersionReleaseId);
+      let revistionRecord = await getNotReqAbbreviationIdsSRS(revisionData.docVersionReleaseId);
       let cleanAbbreviationIdNotReq = [];
       cleanAbbreviationIdNotReq = revistionRecord ? revistionRecord.split(",").map(Number) : [0];
       const combinedData = [...cleanAbbreviationIdNotReq, abbreviationId]
       .filter(id => id !== abbreviationId) 
       .sort((a, b) => a - b);
-      let res = await updateNotReqAbbreviationIds(combinedData + '', revisionData.docVersionReleaseId + '');
+      let res = await updateSRSNotReqAbbreviationIds(combinedData + '', revisionData.docVersionReleaseId + '');
       if (res && res > 0) {
         getAbbreviationsList();
         Swal.fire({
@@ -174,11 +177,11 @@ const handleFilterByLetter = (letter) => {
    });
     if (confirm) {
 
-        let revistionRecord = await getNotReqAbbreviationIds(revisionData.docVersionReleaseId);
+        let revistionRecord = await getNotReqAbbreviationIdsSRS(revisionData.docVersionReleaseId);
         const abbIdNotReq = revistionRecord ? revistionRecord.split(",").map(Number) : [0] ;
         const combinedIds = [...abbIdNotReq, ...arr];
         combinedIds.sort((a, b) => a - b);
-        let res = await updateNotReqAbbreviationIds(combinedIds + '', revisionData.docVersionReleaseId + '');
+        let res = await updateSRSNotReqAbbreviationIds(combinedIds + '', revisionData.docVersionReleaseId + '');
         if (res && res > 0) {
           getAbbreviationsList();
           Swal.fire({
@@ -260,7 +263,7 @@ const handleFilterByLetter = (letter) => {
 
   switch (status) {
     case 'userManualDocContent':
-        return <UserManualAddDocContentEditorComponent versionElements={revisionData} ></UserManualAddDocContentEditorComponent>;
+        return <SrsAddContentEditorComponent versionElements={revisionData} ></SrsAddContentEditorComponent>;
     default:
   return (
     <div>

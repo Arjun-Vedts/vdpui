@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useState,useMemo } from 'react';
-import { Box, Breadcrumbs, Button, Grid, IconButton, Link, TextField, Tooltip, Typography, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Switch, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import { Box, Breadcrumbs, Button, Grid, IconButton, Link, TextField, Tooltip, Typography, Container, Card, CardContent, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, FormControlLabel, Switch, List, ListItem, ListItemText, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
 import Navbar from "components/navbar/Navbar";
 import { Helmet } from 'react-helmet';
 import withRouter from "../../common/with-router";
-import { useNavigate } from 'react-router-dom';
 
-import './user-manual-add-doc-content.css';
+import './atp-manual-add-doc-content.css';
 
 import $ from 'jquery';
-import { addSubChapterNameByChapterId, deleteChapterByChapterId, getUserManualMainChapters, getUserManualSubChaptersById, updateChapterBySnNo, updateChapterContent, updateChapterNameById, updatechapterPagebreakAndLandscape } from 'services/usermanual.service';
+import { deleteChapterByChapterId  } from 'services/usermanual.service';
 import AlertConfirmation from "common/AlertConfirmation.component";
 import { MdAccountTree } from "react-icons/md";
-import UserManualDocsAddDocContentAddSectionDialog from './usermanual-add-content-section-dialog';
-import UserManualDocRecordsComponent from './usermanual-doc-records';
+import AtpDocsAddDocContentAddSectionDialog from './atp-add-content-section-dialog.component';
+import AtpDocTableComponent from './atp-doc-table-content.component';
+import AtpDocRecordsComponent from './atp-doc-record.component';
 import 'summernote/dist/summernote-lite.css';
 import 'summernote/dist/summernote-lite.js';
-import UserManualDocPrint from './usermanual-doc-print';
-import AddAbbreviationComponent from 'components/userManual/add-abbreviation-content';
-import UserManualDocTableComponent from 'components/userManual/usermanual-doc-table-content';
+import AtpDocPrint from './atp-doc-print.component';
+import AtpAddAbbreviationComponent from 'components/atp/atp-add-abbreviation-content.component';
 
-const UserManualAddDocContentEditorComponent = (props)=>{
-    
+import { addAtpSubChapterNameByChapterId, deleteATPChapterByChapterId, getATPMainChapters, getATPSubChaptersById, updateATPChapterBySnNo, updateAtpChapterContent, updateAtpChapterNameById, updateAtpchapterPagebreakAndLandscape } from 'services/atp.service';
+
+const AtpAddContentEditorComponent = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -30,9 +30,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     const [snLv2Submit,setSnLv2Submit] = useState(true);
 
     const [projectSelDto, setProjectSelDto] = useState(null);
-     const [versionReleaseDto, setversionReleaseDto] = useState(null);
     const versionElements  = props?.versionElements;
-    console.log('versionElements',versionElements)
+     const [versionReleaseDto, setversionReleaseDto] = useState(null);
 
     const [AllChapters, setAllChapters] = useState([]);
     const [ChapterListFirstLvl, setChapterListFirstLvl] = useState([]);
@@ -73,20 +72,12 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     const [noteOpen, setNoteOpen] = useState(false);
     const [levelForEditChapter, setLevelForEditChapter] = useState(0);
     const [levelForUpdateEditor, setLevelForUpdateEditor] = useState(0);
-
-
-
     const [openDialog, setOpenDialog] = useState(false);
-    // const [openDialog2, setOpenDialog2] = useState(false);
-    // const [openDialog3, setOpenDialog3] = useState(false);
-    // const [openDialog4, setOpenDialog4] = useState(false);
-
-   // const handleNoteOpen = () => setNoteOpen(true);
     const handleNoteClose = () => setNoteOpen(false);
 
     const getDocPDF = (versionElements) => {
 
-        return <UserManualDocPrint action='' revisionElements={versionElements} buttonType={'Button'} />;
+        return <AtpDocPrint action='' revisionElements={versionElements} buttonType={'Button'} />;
        }
 
 
@@ -173,7 +164,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
       chapterPagebreakOrLandscape.push(editorContentChapterId)
       chapterPagebreakOrLandscape.push(event.target.checked ? 'Y' : 'N')
       chapterPagebreakOrLandscape.push(isLandscape ? 'Y' : 'N')
-        let response = await updatechapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
+        let response = await updateAtpchapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
       };
     
       const handleLandscapeChange = async (event) => {
@@ -182,25 +173,25 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         chapterPagebreakOrLandscape.push(editorContentChapterId)
         chapterPagebreakOrLandscape.push(isPagebreakAfter ? 'Y' : 'N')
         chapterPagebreakOrLandscape.push(event.target.checked ? 'Y' : 'N')
-        let response = await updatechapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
+        let response = await updateAtpchapterPagebreakAndLandscape(chapterPagebreakOrLandscape);
     };
 
+            const fetchData = async () => {
 
-    useEffect(() => {
-        const fetchData = async () => {
-        //  console.log('!!!!',versionElements)
             try {
+           
                 const projectSelectedDto = {
                     projectId: versionElements.projectId
                   };
-                     //docVersionReleaseId
+
+                  //docVersionReleaseId
                        const versionReeaseDto = {
                     docVersionReleaseId: versionElements.docVersionReleaseId
                   };
 
 
                   setProjectSelDto(projectSelectedDto);
-                  setversionReleaseDto(versionReeaseDto)
+                   setversionReleaseDto(versionReeaseDto);
                 getAllChapters(projectSelectedDto,true,versionReeaseDto);
 
             } catch (error) {
@@ -211,6 +202,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         }
 
 
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -226,8 +218,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         try {
             setChapterSnNos(new Map());
             const initialChapterSnNos = new Map();
-            let AllChapters = await getUserManualMainChapters(projectSelectedDtoData,versionElementId.docVersionReleaseId);
-             console.log('all chapter--',AllChapters)
+              console.log("----",versionElementId.docVersionReleaseId)
+            let AllChapters = await getATPMainChapters(projectSelectedDtoData,versionElementId.docVersionReleaseId);
             if (AllChapters && AllChapters.length > 0 && editorFlag) {
                 setEditorTitle(AllChapters[0][3]);
                 if(AllChapters[0][4] !== null){
@@ -273,7 +265,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         try {
             setChapterLv1SnNos(new Map());
             setChapterLv2SnNos(new Map());
-            const response = await getUserManualSubChaptersById(chapterId);
+            const response = await getATPSubChaptersById(chapterId);
             if (level === 1) {
                 const initialChapterSnNos = new Map();
                 (response || []).forEach(item =>{
@@ -317,7 +309,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                 let chapterName = new Array;
                 chapterName.push(editChapterId)
                 chapterName.push(editChapterForm.editChapterName)
-                let res = await updateChapterNameById(chapterName);
+                let res = await updateAtpChapterNameById(chapterName);
                 if (res && res > 0) {
                     if (levelForEditChapter > 0) {
                         if (levelForEditChapter === 1) {
@@ -352,13 +344,13 @@ const UserManualAddDocContentEditorComponent = (props)=>{
 
     
     const afterSubmit = async(level0fSnNo) => {
-      //  console.log('sn level in  afterSubmit'+level0fSnNo);
+       // console.log('sn level in  afterSubmit'+level0fSnNo);
         if(level0fSnNo === 1){
             getAllChapters(projectSelDto,false,versionReleaseDto)
         }else if(level0fSnNo === 2){
             setChapterLv1SnNos(new Map());
             const initialChapterSnNos = new Map();
-            const response = await getUserManualSubChaptersById(chapterSnId);
+            const response = await getATPSubChaptersById(chapterSnId);
             (response || []).forEach(item =>{
                 initialChapterSnNos.set(item[0],item[7])
             })
@@ -367,7 +359,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         }else if(level0fSnNo === 3){
             setChapterLv2SnNos(new Map());
             const initialChapterSnNos = new Map();
-            const response = await getUserManualSubChaptersById(chapterSnId);
+            const response = await getATPSubChaptersById(chapterSnId);
             (response || []).forEach(item =>{
                 initialChapterSnNos.set(item[0],item[7])
             })
@@ -408,7 +400,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             message: '',
         });
         if (confirm) {
-            let res = await deleteChapterByChapterId(chapterId);
+            let res = await deleteATPChapterByChapterId(chapterId);
             if (res && res > 0) {
                 if (level > 0) {
                     if (level === 1) {
@@ -451,8 +443,8 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             let chaperContent= new Array;
             chaperContent.push(editorContentChapterId)
             chaperContent.push(content)
-            let res = await updateChapterContent(chaperContent);
-          //  console.log('result of updateEditorContent'+JSON.stringify(res))
+            let res = await updateAtpChapterContent(chaperContent);
+          
             if (res) {
              
                 afterSubmit(levelForUpdateEditor);
@@ -495,7 +487,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                 ChapterNameAndId.push(AddNewChapterFormThirdLvl.SubChapterName)
             }
             ChapterNameAndId.push(serialNoAdd)
-            let res = await addSubChapterNameByChapterId(ChapterNameAndId);
+            let res = await addAtpSubChapterNameByChapterId(ChapterNameAndId);
 
             if (res && res > 0) {
                 if (level > 0) {
@@ -629,7 +621,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
             message: '',
         });
         if (confirm) {
-                const response = await updateChapterBySnNo((level === 1?chapterSnNos:level === 2?chapterLv1SnNos:chapterLv2SnNos));
+                const response = await updateATPChapterBySnNo((level === 1?chapterSnNos:level === 2?chapterLv1SnNos:chapterLv2SnNos));
                 if(response && response>0){
       
                 // Trigger state refresh without full reload
@@ -665,36 +657,36 @@ const UserManualAddDocContentEditorComponent = (props)=>{
     };
 
 
-    // const goBack = () => {
-    //     setStatus('list');
-    // };
+    const goBack = () => {
+        setStatus('list');
+    };
 
 
 
 
     switch (status) {
         case 'abbreviation':
-            return <AddAbbreviationComponent versionElements={versionElements}></AddAbbreviationComponent>;
+            return <AtpAddAbbreviationComponent versionElements={versionElements}></AtpAddAbbreviationComponent>;
             case 'list':
-                return <UserManualDocRecordsComponent  projectId={versionElements.projectId} ></UserManualDocRecordsComponent>;
+                return <AtpDocRecordsComponent  projectId={versionElements.projectId} ></AtpDocRecordsComponent>;
           case 'addTableContent':
-             return <UserManualDocTableComponent versionElements={versionElements}></UserManualDocTableComponent>
+             return <AtpDocTableComponent versionElements={versionElements}></AtpDocTableComponent>
         default:
         return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflowX: 'hidden' }}>
             <Helmet>
-                <title>VDP - User Manual Content</title>
+                <title>VDP - SRS Content</title>
             </Helmet>
             <Navbar/>
             <Box id="main-container" className='main-container'>
                <Box id="main-breadcrumb">
                     <Breadcrumbs separator=">" aria-label="breadcrumb" className="row headingLink">
                         <Link color="inherit" className="breadcrumb-item links bcLinks" 
-                        href="/user-manual"
+                        href="/atp-document"
                         >
-                            <MdAccountTree></MdAccountTree> User Manual Record
+                            <MdAccountTree></MdAccountTree> ATP Record
                         </Link>
-                        <Typography color="textPrimary"> User Manual Doc Content </Typography>
+                        <Typography color="textPrimary"> ATP Doc Content </Typography>
                     </Breadcrumbs>
                 </Box>
 
@@ -812,7 +804,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                     <Tooltip title="Remove">
                                                                         <span>
                                                                             <Button onClick={() => deleteChapterById(0, chapter[0], 0)} className='delete-icon'>
-                                                                                <i className="material-icons " style={{ color: '#FF0800' }}>remove</i>
+                                                                                <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                             </Button>
                                                                         </span>
                                                                     </Tooltip>
@@ -911,7 +903,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                                             <Tooltip title="Remove">
                                                                                                 <span>
                                                                                                     <Button onClick={() => deleteChapterById(chapter[0], chapter1[0], 1)} className='delete-icon'>
-                                                                                                        <i className="material-icons">remove</i>
+                                                                                                        <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                                                     </Button>
                                                                                                 </span>
                                                                                             </Tooltip>
@@ -992,7 +984,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                                                                                                                 </Tooltip>
                                                                                                                 <Tooltip title="Remove">
                                                                                                                     <Button onClick={() => deleteChapterById(chapter1[0], chapter2[0], 2)} className='delete-icon'>
-                                                                                                                        <i className="material-icons">remove</i>
+                                                                                                                        <i className="material-icons" style={{ color: '#FF0800' }}>remove</i>
                                                                                                                     </Button>
                                                                                                                 </Tooltip>
                                                                                                             </Grid>
@@ -1190,12 +1182,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
                     </Grid>   
 
                     <div className="position-relative m-3">
-                            {/* {docType.split('-')[0] === 'MQAP' ? (
-                            <div className="position-absolute start-0">
-                                   <FaInfoCircle className='animated-button' onClick={handleNoteOpen}/>
-                            </div>
-                            ) : '' }
-                             >*/}
+                         
                                <div className="d-flex justify-content-center">
                                   <Button
                                     variant="contained"
@@ -1218,7 +1205,7 @@ const UserManualAddDocContentEditorComponent = (props)=>{
 
 
 
-                   <UserManualDocsAddDocContentAddSectionDialog 
+                   <AtpDocsAddDocContentAddSectionDialog 
                         open={openDialog}
                         onClose={handleCloseSectionDialog}
                         versionElements={versionElements} snNo = {AllChapters.length}
@@ -1340,6 +1327,5 @@ const UserManualAddDocContentEditorComponent = (props)=>{
         );
     };
     };
-    
 
-export default withRouter(UserManualAddDocContentEditorComponent);
+export default withRouter(AtpAddContentEditorComponent);

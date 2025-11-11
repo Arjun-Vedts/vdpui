@@ -2,7 +2,8 @@ import React, { useEffect,useState } from "react";
 import WordComponent from "static/converter.word.component";
 import PdfComponent from  "static/converter.pdf.component";
 import vedtslogo from '../../assets/images/vedtsLogo.png';
-import { getAllAbbreviations, getApprovedDocListByProject, getDocRevisionRecordById, getDocTemplateAttributes, getUserManualAllChapters, getUserManualTableContentList } from 'services/usermanual.service';
+import { getAllAbbreviations, getAllDocVersionDtoListByProject, getAllUserManualDocVersionDtoListByProject, getApprovedDocListByProject, getDocRevisionRecordById, getDocTemplateAttributes, getUserManualAllChapters, getUserManualTableContentList } from 'services/usermanual.service';
+import { getSRSAllChapters, getSRSApprovedDocListByProject, getSRSDocRevisionRecordById, getSRSTableContentList } from "services/srs.service";
 
 
 
@@ -18,7 +19,7 @@ const getBase64Image = async (url) => {
   });
 };
 
-const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
+const SRSDocHtmlComponent = ({ id,printType, revisionElements}) => {
 
   //const pdfGenerator = PdfComponent();
   const wordGenerator = WordComponent();
@@ -39,7 +40,7 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
     const [isContentComplete, setIsContentComplete] = useState(false);  
         const [isReady, setIsReady] = useState(false);
 
-  const expectedId = "user-manual-document-html"; // Permanent ID
+  const expectedId = "srs-document-html"; // Permanent ID
   const [htmlDocumentContent, setHtmlDocumentContent] = useState("");
 
     useEffect(() => {
@@ -78,12 +79,19 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
         
             Promise.all([
      
-            getDocRevisionRecordById(revisionElements.docVersionReleaseId),
-            getUserManualAllChapters(projectSelDto),
-            getApprovedDocListByProject(projectSelDto),
-            getUserManualTableContentList(projectSelDto),
-            getAllAbbreviations("0"),
-            getDocTemplateAttributes(),
+            // getDocRevisionRecordById(revisionElements.docVersionReleaseId),
+            // getUserManualAllChapters(projectSelDto),
+            // getApprovedDocListByProject(projectSelDto),
+            // getUserManualTableContentList(projectSelDto),
+            // getAllAbbreviations("0"),
+            // getDocTemplateAttributes(),
+
+            getSRSDocRevisionRecordById(revisionElements.docVersionReleaseId),
+                    getSRSAllChapters(projectSelDto),
+                    getSRSApprovedDocListByProject(projectSelDto),
+                    getSRSTableContentList(projectSelDto),
+                    getAllAbbreviations("0"),
+                    getDocTemplateAttributes(),
 
             //getAllUserManualDocVersionDtoListByProject(projectSelDto),
     
@@ -533,10 +541,10 @@ setIsContentComplete(true);
          
   
               if (printType === "pdf") {
-                  console.log("Generating PDF...");
+                //  console.log("Generating PDF...");
                  // pdfGenerator.generatePDF(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               } else if (printType === "word") {
-                  console.log("Generating Word document...");
+                //  console.log("Generating Word document...");
                   wordGenerator.generateWord(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               }
   
@@ -559,6 +567,6 @@ setIsContentComplete(true);
       // );
 
 
-export default UserManualDocHtmlComponent;
+export default SRSDocHtmlComponent;
 
  

@@ -5,14 +5,12 @@ import Navbar from "components/navbar/Navbar";
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { MdEditSquare, MdImageSearch, MdTableView } from "react-icons/md";
-
-import UserManualAddDocContentEditorComponent from 'components/userManual/usermanual-add-content-editor';
-import { getUserManualTableContentById, getUserManualTableContentList } from "services/usermanual.service";
-import UserManualDocContentDialog from "./usermanual-doc-content-dialog";
-
+import AtpAddDocContentEditor from 'components/atp/atp-add-content-editor.component';
+import AtpDocContentDialogComponent from "./atp-doc-content-dialog.component";
+import { getATPTableContentById, getAtpTableContentList } from "services/atp.service";
 
 
-const UserManualDocTableComponent = (props)=>{
+const AtpDocTableComponent = (props)=>{
 
     
     const versionElements = props?.versionElements;
@@ -32,7 +30,7 @@ const UserManualDocTableComponent = (props)=>{
             const projectSelDtoData = {
                 projectId: versionElements.projectId
                 };
-            let tableContentList =  await getUserManualTableContentList(projectSelDtoData);
+            let tableContentList =  await getAtpTableContentList(projectSelDtoData);
             setTableContentList(tableContentList);
             setProjectSelDto(projectSelDtoData);
         } catch (error) {
@@ -50,7 +48,7 @@ const UserManualDocTableComponent = (props)=>{
     };
 
     const handleEditContent = async (contentId) => {
-        let data = await getUserManualTableContentById(contentId);
+        let data = await getATPTableContentById(contentId);
         if (!Array.isArray(data)) {
             data = [data];
         }
@@ -133,7 +131,7 @@ const UserManualDocTableComponent = (props)=>{
     
 switch (status) {
     case 'umDocContent':
-        return <UserManualAddDocContentEditorComponent versionElements={versionElements}></UserManualAddDocContentEditorComponent>;
+        return <AtpAddDocContentEditor versionElements={versionElements}></AtpAddDocContentEditor>;
     default:
     return (
     <Box id="qms-wrapper">
@@ -180,7 +178,7 @@ switch (status) {
                             <br />
                     </Box>}
                 </Box>
-                <UserManualDocContentDialog open={open} onClose={() => setOpen(false)} qaqtDocData={ProjectSelDto} type={contentType} 
+                <AtpDocContentDialogComponent open={open} onClose={() => setOpen(false)} qaqtDocData={ProjectSelDto} type={contentType} 
                       fetchData={fetchData} editData={selectedRowData} />
             </Box>
     </Box>
@@ -192,4 +190,4 @@ switch (status) {
 
 };
 
-export default withRouter(UserManualDocTableComponent);
+export default withRouter(AtpDocTableComponent);

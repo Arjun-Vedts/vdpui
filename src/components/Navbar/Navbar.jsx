@@ -5,8 +5,9 @@ import { logout } from "../../services/auth.service";
 import "./navbarTop.css"
 import "../../static/buttons.css"
 import { useEffect, useState } from "react";
-import { getHeaderModuleDetailList, getHeaderModuleList,changePassword,getNotifiList,getNotifiCount,updateNotification  } from "../../services/admin.serive";
+import { getHeaderModuleDetailList, getHeaderModuleList,getNotifiList,getNotifiCount,updateNotification  } from "../../services/admin.serive";
 import { getLoginEmployeeDetails} from "services/header.service";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -16,6 +17,8 @@ import { getLoginEmployeeDetails} from "services/header.service";
 
 const Navbar = (props) => {
 
+
+  const navigate = useNavigate();
   const [headerModuleList, setHeaderModuleList] = useState([]);
   const [headerModuleDetailList, setHeaderModuleDetailList] = useState([]);
   const [empName, setEmpName] = useState('');
@@ -57,7 +60,8 @@ const Navbar = (props) => {
   const gotoNoti = async (event, item) => {
     event.preventDefault(); 
     const response = await updateNotification(item.notificationId);
-    props.router.navigate(item.notificationUrl);
+   // console.log('item.notificationUrl',item.notificationUrl);
+    navigate(`/${item.notificationUrl}`);
     if (response > 0) {
       const notifiCount = await getNotifiCount();
       const notifiList = await getNotifiList();

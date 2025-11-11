@@ -6,6 +6,18 @@
   background: linear-gradient(35deg,#00c6ff 10%,#0072ff 90%);
 }
 
+.fwdButton{
+  color: green !important;
+}
+
+.amendIcon{
+  color: darkorange
+}
+
+
+
+
+
 
 .notification-count {
   position: absolute;
