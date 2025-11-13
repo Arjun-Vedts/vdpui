@@ -15,7 +15,7 @@ import { Helmet } from "react-helmet";
 import { Formik, Form, Field } from "formik";
 import withRouter from "../../common/with-router";
 import Navbar from "components/navbar/Navbar";
-import { getRolesList, submitUserManagerEdit, UserManagerDto, userManagerEditData, usernameDuplicateCheckInAdd } from "services/admin.serive";
+import { getRolesList, submitUserManagerAdd, submitUserManagerEdit, UserManagerDto, userManagerEditData, usernameDuplicateCheckInAdd } from "services/admin.serive";
 import { getEmployeesList } from "services/header.service";
 import { CustomMenuItem } from "services/auth.header";
 import Swal from "sweetalert2";
@@ -113,30 +113,63 @@ const validationSchema = Yup.object().shape({
 
 
   const handleSubmit = async (values) => {
-    const isEditMode = Boolean(values.username);
-    const successMessage = isEditMode ? "Data Updated Successfully" : " Added Successfully ";
-    const unsuccessMessage = isEditMode ? "Data Update Unsuccessful!" : " Add Unsuccessful ";
-    const Title = isEditMode ? "Are you sure to Update ?" : "Are you sure to Add ?";
+    console.log("values***", values);
+   // const isEditMode = Boolean(values.loginId);
+   /// console.log("mmode",mode)
+    const successMessage = mode==="edit" ? "Data Updated Successfully" : " Data  Added Successfully ";
+    const unsuccessMessage = mode==="edit" ? "Data Update Unsuccessful!" : "Data Add Unsuccessful ";
+    const Title = mode==="edit" ? "Are you sure to Update ?" : "Are you sure to Add ?";
     const confirm = await AlertConfirmation({
         title: Title,
         message: '',
     });
 
-    const userManagerDto = new UserManagerDto(
-      loginId || "",
-      values.username,
-      "",
-      values.selectedRoleType,
-      "",
-      values.selectedEmployeeName
-    );
+    
 
     if (confirm) {
         try {
           let response;
           if (mode === "edit") {
+            // const userManagerDto = new UserManagerDto(
+            //    loginId || "",
+            //    values.username,
+            //       "",
+            //    values.selectedRoleType,
+            //        "",
+            //     values.selectedEmployeeName
+            //         );
+             const userManagerDto = {
+              loginId: loginId || "",
+              userName:values.username,
+              roleId: values.selectedRoleType,
+              logintypeId:values.selectedRoleType,
+              empId:values.selectedEmployeeName
+            }
+            console.log("userManager*******", userManagerDto);
           response = await submitUserManagerEdit(userManagerDto);
           }
+           if (mode === "add") {
+            //  const userManagerDto = new UserManagerDto(
+            //    loginId || "",
+            //    values.username,
+            //       "",
+            //    values.selectedRoleType,
+            //        "",
+            //     values.selectedEmployeeName
+            //         );
+
+         const dto = {
+            loginId : values.loginid || "",
+              userName:values.username,
+              roleId: "",
+              logintypeId:values.selectedRoleType,
+              empId:values.selectedEmployeeName
+            }
+            
+         console.log("userManagerDto*******", dto);
+          response = await submitUserManagerAdd(dto);
+          }
+
           if(response > 0){
           setStatus('list'); 
           Swal.fire({
@@ -194,7 +227,7 @@ const handleUsernameChange = async (event, setFieldValue) => {
     console.error(error);
   }
 };
-
+  
   const rolesOptions = roles.map((role) => [role.roleId, `${role.roleName}`]);
   const employeesOptions = employees.map((emp) => [emp.empId, `${emp.empName}, ${emp.empDesigName}`]);
 
@@ -224,7 +257,7 @@ const handleUsernameChange = async (event, setFieldValue) => {
       <Navbar/>
 
       <Card variant="outlined"  sx={{ padding: '30px', mt: '20px', mx: '20px' }}>
-         <h3>User Manager Edit</h3>
+         <h3>User Manager {mode === "add" ? "Add" : "Edit"}</h3>
       <Box id="card-body">
           <Formik
             initialValues={initialValues}
@@ -333,7 +366,7 @@ const handleUsernameChange = async (event, setFieldValue) => {
                                 margin="normal"
                               />
                             )}
-                            disabled={dropdownDisabled}
+                            // disabled={dropdownDisabled}
                             ListboxProps={{
                               sx: {
                                 maxHeight: 200,
@@ -358,7 +391,8 @@ const handleUsernameChange = async (event, setFieldValue) => {
                               <CustomMenuItem {...props} key={option[0]}>
                                 <ListItemText primary={`${option[1]}`} />
                               </CustomMenuItem>
-                            )}        
+                            )} 
+                                   
                             value={
                               employeesOptions.find(
                                 (emp) => Number(emp[0]) === Number(form.values.selectedEmployeeName)
@@ -367,7 +401,7 @@ const handleUsernameChange = async (event, setFieldValue) => {
                             onChange={(event, newValue) => {
                               setFieldValue(
                                 "selectedEmployeeName",
-                                newValue ? newValue[0] : ""
+                                newValue ? Number(newValue[0]) : ""
                               );
                             }}
                             onBlur={() => form.setFieldTouched("selectedEmployeeName", true)}
@@ -389,7 +423,9 @@ const handleUsernameChange = async (event, setFieldValue) => {
                                 size="small"
                               />
                             )}
-                            disabled={dropdownDisabled}
+                       
+                            //  disabled={mode === "edit"}
+                            // disabled={dropdownDisabled}
                             ListboxProps={{
                               sx: {
                                 maxHeight: 200,

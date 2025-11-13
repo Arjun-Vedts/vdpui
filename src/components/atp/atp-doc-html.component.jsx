@@ -187,35 +187,35 @@ let htmlContent = '';
 
  const handleUserManualHtmlGeneration = () => {
 
-  const superheaderContent = `
-    <table style="width: 100%; border-collapse: collapse;padding: 0px;">
-      <tr>
-        <td style="width: 5%; border: none;"></td>
-        <!-- RESTRICTED content with black border (50%) -->
-        <td style="width: 45%; padding: 1px; border: 1px solid black; text-align: left;">
-          <div>
-            <span style="text-align: left;font-size: 11pt; font-weight: bold; text-decoration: underline;">
-              RESTRICTED
-            </span>
-            <br>
-            <span style="font-size: 12pt;text-align: left;">
-              The information given in this document is not to be published or communicated, 
-              either directly or indirectly, to the press or unauthorized personnel.
-            </span>
-          </div>
-        </td>
-          <td style="width: 5%; padding: 1px; border: none;"></td>
+//  const  superheaderContent = `
+//     <table style="width: 100%; border-collapse: collapse;padding: 0px;">
+//       <tr>
+//         <td style="width: 5%; border: none;"></td>
+//         <!-- RESTRICTED content with black border (50%) -->
+//         <td style="width: 45%; padding: 1px; border: 1px solid black; text-align: left;">
+//           <div>
+//             <span style="text-align: left;font-size: 11pt; font-weight: bold; text-decoration: underline;">
+//               RESTRICTED
+//             </span>
+//             <br>
+//             <span style="font-size: 12pt;text-align: left;">
+//               The information given in this document is not to be published or communicated, 
+//               either directly or indirectly, to the press or unauthorized personnel.
+//             </span>
+//           </div>
+//         </td>
+//           <td style="width: 5%; padding: 1px; border: none;"></td>
  
-        <td style="width: 30%;border: none;text-align: right;">
-         <div style="font-size: 13pt; font-weight: bold;padding: 1px; text-align: right; width: 200px; word-wrap: break-word;">
+//         <td style="width: 30%;border: none;text-align: right;">
+//          <div style="font-size: 13pt; font-weight: bold;padding: 1px; text-align: right; width: 200px; word-wrap: break-word;">
             
-         </div>
-        </td>
-      </tr>
-    </table>
-    `;
+//          </div>
+//         </td>
+//       </tr>
+//     </table>
+//     `;
   
-  htmlContent += superheaderContent;
+//   htmlContent += superheaderContent;
 
     const documentNameContent = `
   <div style="text-align: center;font-size: 20pt; color: #1660B2;font-weight: bold; margin-top: 100px; padding: 0; line-height: 1;">

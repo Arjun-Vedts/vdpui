@@ -64,6 +64,10 @@ const UserManager = (props) => {
         
       setFilteredUserManagerList(filteredList);
     };
+
+    const handleUserManagerAdd=()=>{
+      setStatus('add');
+    }
   
   
   
@@ -72,7 +76,7 @@ const UserManager = (props) => {
       { name: 'Username', selector: (row) => row.username, sortable: true, grow: 2, align: 'text-center' },
       { name: 'Employee', selector: (row) => row.employee, sortable: true, grow: 4 , align: 'text-left' },
       { name: 'Role Name', selector: (row) => row.rolename, sortable: true, grow: 2 , align: 'text-center'},
-      { name: 'Division', selector: (row) => row.division, sortable: true, grow: 2 , align: 'text-center'},
+      // { name: 'Division', selector: (row) => row.division, sortable: true, grow: 2 , align: 'text-center'},
       { name: 'Action', selector: (row) => row.action, sortable: false, grow: 2, align: 'text-center' },
     ];
   
@@ -81,7 +85,7 @@ const UserManager = (props) => {
       username: item.username || '-',
       employee: item.empName+', '+item.empDesig || '-',
       rolename: item.formRoleName || '-',
-      division: item.empDivCode || '-',
+      // division: item.empDivCode || '-',
       action: (
         <React.Fragment>
                     <Tooltip title="Edit User">
@@ -113,6 +117,14 @@ const UserManager = (props) => {
             <UserManagerActionsComponent
                 mode="edit"
                 loginId={stateLoginId}
+            />
+        );
+
+         case 'add':
+        return (
+            <UserManagerActionsComponent
+                mode="add"
+                
             />
         );
   default:
@@ -171,11 +183,11 @@ const UserManager = (props) => {
                 <Datatable columns={columns} data={mappedData} />
               )}
   
-             {/* <Box className="add-button-wrapper" align="center" >
+             <Box className="add-button-wrapper" align="center" >
                 <Button variant="contained" sx={{ marginLeft: '8px!important' }}  color="primary" onClick={handleUserManagerAdd}>
                   Add
                 </Button>
-              </Box>  */}
+              </Box> 
   
             </Box>
           </Box>

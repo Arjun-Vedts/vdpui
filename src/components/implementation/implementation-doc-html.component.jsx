@@ -2,7 +2,9 @@ import React, { useEffect,useState } from "react";
 import WordComponent from "static/converter.word.component";
 import PdfComponent from  "static/converter.pdf.component";
 import vedtslogo from '../../assets/images/vedtsLogo.png';
-import { getAllAbbreviations, getApprovedDocListByProject, getDocRevisionRecordById, getDocTemplateAttributes, getUserManualAllChapters, getUserManualTableContentList } from 'services/usermanual.service';
+import { getAllAbbreviations, getDocTemplateAttributes } from 'services/usermanual.service';
+
+import { getImplAllChapters, getImplApprovedDocListByProject, getImplDocRevisionRecordById, getImplTableContentList } from "services/implementation.service";
 
 
 
@@ -18,7 +20,7 @@ const getBase64Image = async (url) => {
   });
 };
 
-const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
+const ImplementationDocHtmlComponent = ({ id,printType, revisionElements}) => {
 
   //const pdfGenerator = PdfComponent();
   const wordGenerator = WordComponent();
@@ -39,7 +41,7 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
     const [isContentComplete, setIsContentComplete] = useState(false);  
         const [isReady, setIsReady] = useState(false);
 
-  const expectedId = "user-manual-document-html"; // Permanent ID
+  const expectedId = "implementation-doc-html"; // Permanent ID
   const [htmlDocumentContent, setHtmlDocumentContent] = useState("");
 
     useEffect(() => {
@@ -78,12 +80,19 @@ const UserManualDocHtmlComponent = ({ id,printType, revisionElements}) => {
         
             Promise.all([
      
-            getDocRevisionRecordById(revisionElements.docVersionReleaseId),
-            getUserManualAllChapters(projectSelDto),
-            getApprovedDocListByProject(projectSelDto),
-            getUserManualTableContentList(projectSelDto),
-            getAllAbbreviations("0"),
-            getDocTemplateAttributes(),
+            // getDocRevisionRecordById(revisionElements.docVersionReleaseId),
+            // getUserManualAllChapters(projectSelDto),
+            // getApprovedDocListByProject(projectSelDto),
+            // getUserManualTableContentList(projectSelDto),
+            // getAllAbbreviations("0"),
+            // getDocTemplateAttributes(),
+
+            getImplDocRevisionRecordById(revisionElements.docVersionReleaseId),
+                    getImplAllChapters(projectSelDto),
+                    getImplApprovedDocListByProject(projectSelDto),
+                    getImplTableContentList(projectSelDto),
+                    getAllAbbreviations("0"),
+                    getDocTemplateAttributes(),
 
             //getAllUserManualDocVersionDtoListByProject(projectSelDto),
     
@@ -211,7 +220,7 @@ let htmlContent = '';
 
     const documentNameContent = `
   <div style="text-align: center;font-size: 20pt; color: #1660B2;font-weight: bold; margin-top: 100px; padding: 0; line-height: 1;">
-      User Manual <br> for ${revisionElements.projectMasterDto.projectName}
+      Implementation Document <br> for ${revisionElements.projectMasterDto.projectName}
   </div>
 `;
 
@@ -379,10 +388,10 @@ htmlContent += `
      // Add main chapter content to HTML diva
      //id="main-chapter-${i}"
      htmlContent += `
-        <div  class="mainChaper"  style="font-size: ${DocTemplateAttributes[1]}pt; font-weight: bold; margin: 0; padding: 0; line-height: 1;height: auto;">
+        <div  className="mainChaper"  style="font-size: ${DocTemplateAttributes[1]}pt; font-weight: bold; margin: 0; padding: 0; line-height: 1;height: auto;">
              ${copyArray[0]} ${copyArray[4]}
          </div>
-          <div  class="chaperContent" style="font-size: ${DocTemplateAttributes[4]}pt; margin: 0; text-align: justify; padding: 0; line-height: 1;height: auto;">
+          <div  className="chaperContent" style="font-size: ${DocTemplateAttributes[4]}pt; margin: 0; text-align: justify; padding: 0; line-height: 1;height: auto;">
              ${copyArray[5] !== null && copyArray[5] !== 'null' ? setImagesWidth(copyArray[5], 600) : ''}
          </div>
         <div id="page-break-before" style="page-break-before: always;"></div> <!-- Add page break after the table --> <!-- Add page break for main chapter user on or dont on still it is manadatory -->
@@ -425,13 +434,13 @@ htmlContent += `
          // Adding the first-level chapter title  diva
          //id="first-chapter-${i}-${j}"
          htmlContent += `
-            <div   class="firstLvlChapers" style="font-size: ${DocTemplateAttributes[2]}pt; font-weight: bold; margin-left: 15px; padding: 0; line-height: 1;height: auto;">
+            <div   className="firstLvlChapers" style="font-size: ${DocTemplateAttributes[2]}pt; font-weight: bold; margin-left: 15px; padding: 0; line-height: 1;height: auto;">
                  ${copyArray[0]} ${copyArray[4]}
              </div> 
              `;
         // Adding the first-level chapter content    
            htmlContent += `
-             <div  class="firstLvlContent" style="font-size: ${DocTemplateAttributes[4]}pt;text-align: justify; margin-left: 15px;margin-bottom: 10px;  padding: 0; line-height: 1;height: auto;">
+             <div  className="firstLvlContent" style="font-size: ${DocTemplateAttributes[4]}pt;text-align: justify; margin-left: 15px;margin-bottom: 10px;  padding: 0; line-height: 1;height: auto;">
                ${chaptercontent !== null && chaptercontent !== 'null' ? setImagesWidth(chaptercontent, 600) : ''}
              </div>
           `;
@@ -474,13 +483,13 @@ htmlContent += `
                 // Adding the second-level chapter title  diva
                 // id="second-chapter-${i}-${j}-${k}"
                   htmlContent += `
-                   <div class="secondLvlChapers"  style="font-size: ${DocTemplateAttributes[4]}pt; font-weight: bold; margin-left: 30px; margin-top: 10px;">
+                   <div className="secondLvlChapers"  style="font-size: ${DocTemplateAttributes[4]}pt; font-weight: bold; margin-left: 30px; margin-top: 10px;">
                        ${copyArray[0]} ${copyArray[4]}
                    </div>
                  `;
                  // Adding the second-level chapter content
                   htmlContent += `
-                    <div class="secondLvlContent" style="font-size: ${DocTemplateAttributes[4]}pt; margin-left: 15px; margin-bottom: 10px; text-align: justify;">
+                    <div className="secondLvlContent" style="font-size: ${DocTemplateAttributes[4]}pt; margin-left: 15px; margin-bottom: 10px; text-align: justify;">
                       ${(copyArray[5] !== null && copyArray[5] !== 'null') ? setImagesWidth(copyArray[5], 600) : ''}
                     </div>
                     `;
@@ -533,10 +542,10 @@ setIsContentComplete(true);
          
   
               if (printType === "pdf") {
-                  console.log("Generating PDF...");
+                //  console.log("Generating PDF...");
                  // pdfGenerator.generatePDF(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               } else if (printType === "word") {
-                  console.log("Generating Word document...");
+                //  console.log("Generating Word document...");
                   wordGenerator.generateWord(htmlDocumentContent,revisionElements.projectMasterDto.projectShortName,ApprovedVersionReleaseList.length,DocTemplateAttributes,AllChaptersList);
               }
   
@@ -559,6 +568,6 @@ setIsContentComplete(true);
       // );
 
 
-export default UserManualDocHtmlComponent;
+export default ImplementationDocHtmlComponent;
 
  

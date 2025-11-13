@@ -11,8 +11,9 @@ import backgroundImage from '../../assets/images/UserManualBG1.png'
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { getAllAbbreviations,  getDocTemplateAttributes } from 'services/usermanual.service';
-import { getAtpAllChapters, getAtpApprovedDocListByProject, getAtpDocRevisionRecordById, getAtpTableContentList } from 'services/atp.service';
+import { getAllAbbreviations, getDocTemplateAttributes } from 'services/usermanual.service';
+
+import { getImplAllChapters, getImplApprovedDocListByProject, getImplDocRevisionRecordById, getImplTableContentList } from 'services/implementation.service';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -35,7 +36,7 @@ const getBase64Image = async (url) => {
 
 
 
-const AtpDocPrint = ({action, revisionElements, buttonType }) => {
+const ImplementationDocPrint = ({action, revisionElements, buttonType }) => {
 
       const [logoBase64, setLogoBase64] = useState('');
       const [blueBackground, setBlueBackgound] = useState('');
@@ -78,16 +79,16 @@ const AtpDocPrint = ({action, revisionElements, buttonType }) => {
       useEffect(() => {
         const projectSelDto = {
           projectId: revisionElements.projectId,
-           docversionReleaseId: revisionElements.docVersionReleaseId
+            docversionReleaseId: revisionElements.docVersionReleaseId
             };
            
            
         Promise.all([
            
-        getAtpDocRevisionRecordById(revisionElements.docVersionReleaseId),
-        getAtpAllChapters(projectSelDto),
-        getAtpApprovedDocListByProject(projectSelDto),
-        getAtpTableContentList(projectSelDto),
+        getImplDocRevisionRecordById(revisionElements.docVersionReleaseId),
+        getImplAllChapters(projectSelDto),
+        getImplApprovedDocListByProject(projectSelDto),
+        getImplTableContentList(projectSelDto),
         getAllAbbreviations("0"),
         getDocTemplateAttributes(),
 
@@ -369,7 +370,7 @@ function generateRotatedTextImage(text) {
     //////////////////////////////////////////////////User Manual Doc Definition Start/////////////////////////////////////////////////////////////////////////
 let docDefinition = {
   info: {
-    title: "ATP Print",
+    title: "Implementation Print",
   },
   pageSize: 'A4',
   pageOrientation: 'portrait',
@@ -410,7 +411,7 @@ let docDefinition = {
                 stack: [{
                   columns: [
     
-                    { text: today.getFullYear() + '/ATP/' + revisionElements.projectMasterDto.projectShortName + '/' + (ApprovedVersionReleaseList.length), fontSize : 9,linkToDestination: 'TOC_PAGE'},
+                    { text: today.getFullYear() + '/ID/' + revisionElements.projectMasterDto.projectShortName + '/' + (ApprovedVersionReleaseList.length), fontSize : 9,linkToDestination: 'TOC_PAGE'},
                     { text: 'RESTRICTED', style: 'footerNote',linkToDestination: 'TOC_PAGE' },
                     {
                       text: "Page " + currentPage.toString() + ' of ' + pageCount, margin: [45, 0, 0, 0], fontSize : 9,linkToDestination: 'TOC_PAGE' ,
@@ -557,7 +558,7 @@ let docDefinition = {
         
         // Document title with gradient accent
         { 
-          text: 'Acceptance Test Plan for\n' + revisionElements.projectMasterDto.projectName, 
+          text: 'Implementation Document for\n' + revisionElements.projectMasterDto.projectName, 
           style: 'DocumentName', 
           alignment: 'center',
           margin: [0, 150, 0, 25]
@@ -960,11 +961,11 @@ let docDefinition = {
             firstLvlChapers: {
                 fontSize: DocTemplateAttributes[2],
                 bold: true,
-                margin: [15, 10, 10, 0]
+                margin: [10, 10, 10, 0]
             },
             firstLvlContent: {
                 fontSize: DocTemplateAttributes[4],
-                margin: [15, 10, 0, 10],
+                margin: [10, 10, 0, 10],
                 alignment: 'justify',
               
             },
@@ -991,7 +992,7 @@ let docDefinition = {
             },
             secondLvlContent: {
                 fontSize: DocTemplateAttributes[4],
-                margin: [30, 10, 0, 10],
+                margin: [17, 0, 0, 0],
                 alignment: 'justify',
             },
             tableLabel: {
@@ -1075,4 +1076,4 @@ let docDefinition = {
       );
     
       }
-    export default AtpDocPrint;
+    export default ImplementationDocPrint;

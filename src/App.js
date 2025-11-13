@@ -26,6 +26,9 @@ import SRSApproved from 'components/SRSDocx/srs-approve.component';
 import ATPDocsTransactionComponent from 'components/atp/atp-docs-transcation.component';
 import ATPDocxPreview from 'components/atp/atp-docx-preview.component';
 import ATPApproved from 'components/atp/atp-approve.component';
+import ImplementationDocRecordsComponent from 'components/implementation/implementation-doc-records.component';
+
+
 
 function App() {
   return (
@@ -45,50 +48,24 @@ function App() {
          <Route path="/employee" element={<EmployeeComponent/>}  />
          <Route path="/designation" element={<DesignationComponent/>}  />
          <Route path="/project" element={<ProjectComponent />} />
-
-         {/* user Manual Content*/}
          <Route path="/user-manual" element={<UserManualDocRecordsComponent />} />
-           {/* user Manual Preview*/}
-            
-             <Route path="/userManualPreview" element={<UserManualPreview />} />
+          <Route path="/userManualPreview" element={<UserManualPreview />} />
+          <Route path="/userManualApproved" element={<UserManualApproved />} />
+          <Route path="/docs-trans" element={<DocsTransactionComponent />} /> 
+          <Route path="/srs-document" element={<SrsDocRecords />} />
+          <Route path="/atp-document" element={<AtpDocRecordComponent />} />
+           <Route path="/SRSDocxPreview" element={<SRSDocxPreview />} />
+            <Route path="/SRSApproved" element={<SRSApproved />} />
+           <Route path="/srs-docs-trans" element={<SRSDocsTransactionComponent />} /> 
+           <Route path="/atp-docs-trans" element={<ATPDocsTransactionComponent />} /> 
+            <Route path="/ATPDocxPreview" element={<ATPDocxPreview />} />
+            <Route path="/ATPApproved" element={<ATPApproved />} />
 
-             {/* //userManualApproved */}
-             <Route path="/userManualApproved" element={<UserManualApproved />} />
-             
-              {/*  transcation */}
-               <Route path="/docs-trans" element={<DocsTransactionComponent />} /> 
-
-           
-
-         
-           {/* SRS Docx */}
-             <Route path="/srs-document" element={<SrsDocRecords />} />
-
-              {/* ATP Docx */}
-                <Route path="/atp-document" element={<AtpDocRecordComponent />} />
-
-                 {/* SRS Preview*/}
-            
-             <Route path="/SRSDocxPreview" element={<SRSDocxPreview />} />
-
-               {/*  SRS  Approved*/}
-                  <Route path="/SRSApproved" element={<SRSApproved />} />
+            {/* implmentation */}
+            <Route path="/implementation-document" element={<ImplementationDocRecordsComponent />} />
 
 
-                          {/*   srs transcation */}
-               <Route path="/srs-docs-trans" element={<SRSDocsTransactionComponent />} /> 
 
-
-               {/* //atp-docs-trans */}
-                <Route path="/atp-docs-trans" element={<ATPDocsTransactionComponent />} /> 
-                {/* ATPDocxPreview
-                ATPApproved */}
-                {/* atp Preview*/}
-            
-             <Route path="/ATPDocxPreview" element={<ATPDocxPreview />} />
-
-               {/*  atp  Approved*/}
-                  <Route path="/ATPApproved" element={<ATPApproved />} />
 
     
       </Routes>

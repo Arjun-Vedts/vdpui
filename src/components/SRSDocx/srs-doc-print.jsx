@@ -187,7 +187,7 @@ function generateRotatedTextImage(text) {
   canvas.height = 1360;
   ctx.font = '14px Roboto';
   ctx.fillStyle = 'rgba(128, 128, 128, 1)'; 
-  ctx.translate(80, 1480); 
+  ctx.translate(80, 950); 
   ctx.rotate(-Math.PI / 2);
   const lineHeight = 20; 
   lines.forEach((line, index) => {
@@ -496,71 +496,71 @@ let docDefinition = {
     {
       stack: [
         // Restricted notice with gradient accent
-        {
-          columns: [
-            {
-              style: 'tableExample',
-              table: {
-                widths: [255],
-                body: [
-                  [
+//         {
+//           columns: [
+//             {
+//               style: 'tableExample',
+//               table: {
+//                 widths: [255],
+//                 body: [
+//                   [
 
               
                     
-                    {
-                      stack: [
-                      // Double border effect
+//                     {
+//                       stack: [
+//                       // Double border effect
                       
-//            {
-// canvas: [
-//     {
-//       type: 'rect',
-//       x: 19, 
-//       y: 0,
-//       w: 555.28, 
-//       h: 15, 
-//       color: '#0072ff',
-//     },
+// //            {
+// // canvas: [
+// //     {
+// //       type: 'rect',
+// //       x: 19, 
+// //       y: 0,
+// //       w: 555.28, 
+// //       h: 15, 
+// //       color: '#0072ff',
+// //     },
     
-//        {
-//       type: 'rect',
-//       x: 19,  
-//       y: 18,
-//       w: 555.28, 
-//       h: 5,  
-//       color: '#00c6ff',
-//     },
-//   ],
-//     absolutePosition: { x: 1.5, y: 25 },
-//                       },
-// Main header with improved styling
-                        { 
-                          text: 'RESTRICTED', 
-                          style: 'superheader',
-                          background: '#0072ff',
-                          color: 'white',
-                          margin: [0, 0, 0, 0]
-                        },
-                        { 
-                          text: 'The information given in this document is not to be published or communicated, either directly or indirectly, to the press or to any personnel not authorized to receive it.', 
-                          style: 'normal',
-                          margin: [0, 5, 0, 0]
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              }
-            }
-          ]
-        },
+// //        {
+// //       type: 'rect',
+// //       x: 19,  
+// //       y: 18,
+// //       w: 555.28, 
+// //       h: 5,  
+// //       color: '#00c6ff',
+// //     },
+// //   ],
+// //     absolutePosition: { x: 1.5, y: 25 },
+// //                       },
+// // Main header with improved styling
+//                         { 
+//                           text: 'RESTRICTED', 
+//                           style: 'superheader',
+//                           background: '#0072ff',
+//                           color: 'white',
+//                           margin: [0, 0, 0, 0]
+//                         },
+//                         { 
+//                           text: 'The information given in this document is not to be published or communicated, either directly or indirectly, to the press or to any personnel not authorized to receive it.', 
+//                           style: 'normal',
+//                           margin: [0, 5, 0, 0]
+//                         }
+//                       ]
+//                     }
+//                   ]
+//                 ]
+//               }
+//             }
+//           ]
+//         },
         
         // Document title with gradient accent
         { 
           text: 'Software Requirement Document for\n' + revisionElements.projectMasterDto.projectName, 
           style: 'DocumentName', 
           alignment: 'center',
-          margin: [0, 20, 0, 25]
+          margin: [0, 150, 0, 25]
         },
         
         // Logo with gradient border effect
